@@ -123,6 +123,26 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 
 /* Footer */
 .footer { text-align: center; padding: 24px 0; font-size: 12px; color: #86868b; }
+
+/* Timer */
+.timer-fab { position: fixed; bottom: 24px; right: 24px; z-index: 999; }
+.timer-fab .timer-btn { width: 52px; height: 52px; border-radius: 50%; border: none; background: #0071e3; color: white; font-size: 20px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,113,227,0.3); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.timer-fab .timer-btn:hover { transform: scale(1.05); box-shadow: 0 6px 16px rgba(0,113,227,0.4); }
+.timer-fab .timer-btn.running { background: #34c759; box-shadow: 0 4px 12px rgba(52,199,89,0.3); }
+.timer-fab .timer-btn.running:hover { box-shadow: 0 6px 16px rgba(52,199,89,0.4); }
+.timer-panel { position: absolute; bottom: 64px; right: 0; background: white; border-radius: 16px; padding: 16px; width: 220px; box-shadow: 0 8px 32px rgba(0,0,0,0.12); display: none; animation: fadeIn 0.2s ease; }
+.timer-panel.show { display: block; }
+.timer-display { font-size: 32px; font-weight: 300; text-align: center; font-variant-numeric: tabular-nums; letter-spacing: -0.5px; margin-bottom: 12px; color: #1d1d1f; }
+.timer-controls { display: flex; gap: 8px; justify-content: center; }
+.timer-controls button { padding: 8px 14px; border: none; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+.timer-controls .t-start { background: #34c759; color: white; }
+.timer-controls .t-start:hover { background: #2db853; }
+.timer-controls .t-pause { background: #ff9500; color: white; }
+.timer-controls .t-pause:hover { background: #e68600; }
+.timer-controls .t-reset { background: #f5f5f7; color: #6e6e73; }
+.timer-controls .t-reset:hover { background: #e8e8ed; }
+.timer-laps { margin-top: 10px; max-height: 120px; overflow-y: auto; }
+.timer-laps .lap { display: flex; justify-content: space-between; font-size: 11px; color: #6e6e73; padding: 3px 0; border-bottom: 0.5px solid #f0f0f5; }
 </style>
 </head>
 <body>
@@ -1304,6 +1324,21 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   </div>
 </div>
 
+<!-- Floating Timer -->
+<div class="timer-fab">
+  <div class="timer-panel" id="timerPanel">
+    <div class="timer-display" id="timerDisplay">00:00:00</div>
+    <div class="timer-controls" id="timerControls">
+      <button class="t-start" id="btnStart" onclick="timerStart()">开始</button>
+      <button class="t-pause" id="btnPause" onclick="timerPause()" style="display:none;">暂停</button>
+      <button class="t-reset" onclick="timerReset()">重置</button>
+      <button class="t-reset" onclick="timerLap()">计圈</button>
+    </div>
+    <div class="timer-laps" id="timerLaps"></div>
+  </div>
+  <button class="timer-btn" id="timerFabBtn" onclick="toggleTimer()" title="计时器">&#9201;</button>
+</div>
+
 <script>
 // Clock
 function updateTime() {
@@ -1546,6 +1581,72 @@ currentWeekMonday = getMonday(initNow);
 calMonth = initNow.getMonth();
 calYear = initNow.getFullYear();
 showPageForDate(initNow.getFullYear(), initNow.getMonth(), initNow.getDate());
+
+// ===== Timer =====
+let timerInterval = null;
+let timerSeconds = 0;
+let timerRunning = false;
+let lapCount = 0;
+let lastLapTime = 0;
+
+function toggleTimer() {
+  const panel = document.getElementById('timerPanel');
+  panel.classList.toggle('show');
+}
+
+function formatTime(totalSec) {
+  const h = String(Math.floor(totalSec / 3600)).padStart(2, '0');
+  const m = String(Math.floor((totalSec % 3600) / 60)).padStart(2, '0');
+  const s = String(totalSec % 60).padStart(2, '0');
+  return `${h}:${m}:${s}`;
+}
+
+function timerStart() {
+  if (timerRunning) return;
+  timerRunning = true;
+  document.getElementById('btnStart').style.display = 'none';
+  document.getElementById('btnPause').style.display = '';
+  document.getElementById('timerFabBtn').classList.add('running');
+  timerInterval = setInterval(() => {
+    timerSeconds++;
+    document.getElementById('timerDisplay').textContent = formatTime(timerSeconds);
+  }, 1000);
+}
+
+function timerPause() {
+  timerRunning = false;
+  clearInterval(timerInterval);
+  document.getElementById('btnStart').style.display = '';
+  document.getElementById('btnStart').textContent = '继续';
+  document.getElementById('btnPause').style.display = 'none';
+  document.getElementById('timerFabBtn').classList.remove('running');
+}
+
+function timerReset() {
+  timerRunning = false;
+  clearInterval(timerInterval);
+  timerSeconds = 0;
+  lapCount = 0;
+  lastLapTime = 0;
+  document.getElementById('timerDisplay').textContent = '00:00:00';
+  document.getElementById('btnStart').style.display = '';
+  document.getElementById('btnStart').textContent = '开始';
+  document.getElementById('btnPause').style.display = 'none';
+  document.getElementById('timerFabBtn').classList.remove('running');
+  document.getElementById('timerLaps').innerHTML = '';
+}
+
+function timerLap() {
+  if (!timerRunning && timerSeconds === 0) return;
+  lapCount++;
+  const lapTime = timerSeconds - lastLapTime;
+  lastLapTime = timerSeconds;
+  const lapsEl = document.getElementById('timerLaps');
+  const div = document.createElement('div');
+  div.className = 'lap';
+  div.innerHTML = '<span>#' + lapCount + '</span><span>' + formatTime(lapTime) + '</span><span>' + formatTime(timerSeconds) + '</span>';
+  lapsEl.insertBefore(div, lapsEl.firstChild);
+}
 </script>
 </body>
 </html>
