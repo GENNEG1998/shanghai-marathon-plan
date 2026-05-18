@@ -39,6 +39,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .cal-grid .day.race { position: relative; background: #fde8e8; color: #E24B4A; font-weight: 600; }
 .cal-grid .day.race::after { content: ''; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: #E24B4A; }
 .cal-grid .day.empty { visibility: hidden; }
+.cal-grid .day.current-week { background: #f0f0f5; }
+.cal-grid .day.today.current-week { background: #0071e3; }
 
 /* Pagination */
 .page-nav { display: flex; justify-content: center; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
@@ -150,15 +152,18 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     </div>
   </div>
 
+  <!-- Week indicator -->
+  <div id="weekIndicator" style="text-align:center;margin-bottom:12px;font-size:13px;color:#6e6e73;"></div>
+
   <!-- Day Navigation -->
   <div class="page-nav">
-    <button class="rest-day" onclick="showPage(0);clearSelection()">周一</button>
-    <button class="run-day" onclick="showPage(1);clearSelection()">周二</button>
-    <button class="strength-day" onclick="showPage(2);clearSelection()">周三</button>
-    <button class="run-day" onclick="showPage(3);clearSelection()">周四</button>
-    <button class="strength-day" onclick="showPage(4);clearSelection()">周五</button>
-    <button class="long-day" onclick="showPage(5);clearSelection()">周六</button>
-    <button class="recovery-day" onclick="showPage(6);clearSelection()">周日</button>
+    <button class="rest-day" onclick="navToDay(0)">周一</button>
+    <button class="run-day" onclick="navToDay(1)">周二</button>
+    <button class="strength-day" onclick="navToDay(2)">周三</button>
+    <button class="run-day" onclick="navToDay(3)">周四</button>
+    <button class="strength-day" onclick="navToDay(4)">周五</button>
+    <button class="long-day" onclick="navToDay(5)">周六</button>
+    <button class="recovery-day" onclick="navToDay(6)">周日</button>
   </div>
 
   <!-- Phase bar -->
@@ -1313,38 +1318,75 @@ function updateTime() {
 setInterval(updateTime, 1000);
 updateTime();
 
-// Holiday dates (month is 0-indexed)
-const holidays = {
-  '2026-5-19': 'duanwu', '2026-5-20': 'duanwu', '2026-5-21': 'duanwu',
-  '2026-8-25': 'zhongqiu', '2026-8-26': 'zhongqiu', '2026-8-27': 'zhongqiu',
-  '2026-9-1': 'guoqing', '2026-9-2': 'guoqing', '2026-9-3': 'guoqing',
-  '2026-9-4': 'guoqing', '2026-9-5': 'guoqing', '2026-9-6': 'guoqing', '2026-9-7': 'guoqing'
-};
-// Race day
-const raceDay = '2026-11-6'; // Dec 6 = month 11 (0-indexed)
+// Training start date: May 19, 2026 (Monday of W1)
+const trainingStart = new Date(2026, 4, 19); // month 0-indexed
 
-function isHoliday(year, month, day) {
+// Holiday dates: key = 'YYYY-M-D' (month 0-indexed), value = holiday name
+const holidays = {
+  '2026-5-19': '端午节', '2026-5-20': '端午节', '2026-5-21': '端午节',
+  '2026-8-25': '中秋节', '2026-8-26': '中秋节', '2026-8-27': '中秋节',
+  '2026-9-1': '国庆节', '2026-9-2': '国庆节', '2026-9-3': '国庆节',
+  '2026-9-4': '国庆节', '2026-9-5': '国庆节', '2026-9-6': '国庆节', '2026-9-7': '国庆节'
+};
+const raceDay = '2026-11-6';
+
+function getHoliday(year, month, day) {
   return holidays[year + '-' + month + '-' + day] || null;
 }
 function isRaceDay(year, month, day) {
   return (year + '-' + month + '-' + day) === raceDay;
 }
 
-// Get page index for a specific date
+// Get training week number (W1-W29) for a given date
+function getTrainingWeek(date) {
+  const diff = date - trainingStart;
+  if (diff < 0) return null;
+  const week = Math.floor(diff / (7 * 24 * 60 * 60 * 1000)) + 1;
+  return week <= 29 ? week : null;
+}
+
+// Get the Monday of the week containing a date
+function getMonday(date) {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+// Get phase name for a given week
+function getPhaseName(w) {
+  if (!w) return '';
+  if (w <= 4) return '基础期';
+  if (w <= 10) return '进阶期';
+  if (w <= 17) return '强化期';
+  if (w <= 23) return '巅峰期';
+  if (w <= 29) return '减量期';
+  return '';
+}
+function getPhaseColor(w) {
+  if (!w) return '#86868b';
+  if (w <= 4) return '#85B7EB';
+  if (w <= 10) return '#5DCAA5';
+  if (w <= 17) return '#EF9F27';
+  if (w <= 23) return '#E24B4A';
+  return '#888780';
+}
+
+// Which page to show for a date
 function getPageForDate(year, month, day) {
-  const date = new Date(year, month, day);
-  const dow = date.getDay();
-  // Race day
   if (isRaceDay(year, month, day)) return 7;
-  // Holiday
-  if (isHoliday(year, month, day)) return 8;
-  // Normal weekday
+  if (getHoliday(year, month, day)) return 8;
+  const dow = new Date(year, month, day).getDay();
   return dow === 0 ? 6 : dow - 1;
 }
 
-// Pages
+// State
 let currentPage = 0;
 let selectedDate = null;
+let currentWeekMonday = null; // The monday of the week we're viewing
+let calYear = 2026, calMonth = 4;
 
 function showPage(idx) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -1357,33 +1399,45 @@ function showPage(idx) {
   currentPage = idx;
 }
 
-function clearSelection() {
-  selectedDate = null;
-  document.querySelectorAll('.cal-grid .day').forEach(el => el.classList.remove('selected'));
+function updateWeekIndicator() {
+  const el = document.getElementById('weekIndicator');
+  if (!currentWeekMonday) { el.textContent = ''; return; }
+  const w = getTrainingWeek(currentWeekMonday);
+  if (w) {
+    const phase = getPhaseName(w);
+    const color = getPhaseColor(w);
+    el.innerHTML = '<span style="font-weight:600;color:' + color + ';">W' + w + ' ' + phase + '</span> · ' +
+      (currentWeekMonday.getMonth()+1) + '/' + currentWeekMonday.getDate() + ' - ' +
+      (new Date(currentWeekMonday.getTime() + 6*86400000).getMonth()+1) + '/' +
+      (new Date(currentWeekMonday.getTime() + 6*86400000).getDate());
+  } else {
+    const d = currentWeekMonday;
+    el.innerHTML = '<span style="color:#86868b;">' + (d.getMonth()+1) + '/' + d.getDate() + ' 周（训练计划外）</span>';
+  }
+}
+
+function navToDay(dayIdx) {
+  // dayIdx: 0=Mon...6=Sun
+  if (currentWeekMonday) {
+    const targetDate = new Date(currentWeekMonday.getTime() + dayIdx * 86400000);
+    showPageForDate(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
+  } else {
+    showPage(dayIdx);
+  }
 }
 
 function showPageForDate(year, month, day) {
   const idx = getPageForDate(year, month, day);
   showPage(idx);
   selectedDate = { year, month, day };
-  highlightSelectedDay();
-}
-
-// Calendar
-let calYear = 2026, calMonth = 4; // 0-indexed, May=4
-
-function highlightSelectedDay() {
-  document.querySelectorAll('.cal-grid .day').forEach(el => {
-    el.classList.remove('selected');
-  });
-  if (selectedDate && selectedDate.year === calYear && selectedDate.month === calMonth) {
-    const days = document.querySelectorAll('.cal-grid .day:not(.empty)');
-    days.forEach(el => {
-      if (parseInt(el.textContent) === selectedDate.day) {
-        el.classList.add('selected');
-      }
-    });
+  currentWeekMonday = getMonday(new Date(year, month, day));
+  updateWeekIndicator();
+  // Ensure calendar shows the right month
+  if (calYear !== year || calMonth !== month) {
+    calYear = year;
+    calMonth = month;
   }
+  renderCalendar();
 }
 
 function renderCalendar() {
@@ -1412,6 +1466,8 @@ function renderCalendar() {
   }
   
   const today = new Date();
+  today.setHours(0,0,0,0);
+  
   for (let d = 1; d <= daysInMonth; d++) {
     const el = document.createElement('div');
     el.className = 'day';
@@ -1420,14 +1476,25 @@ function renderCalendar() {
     const date = new Date(calYear, calMonth, d);
     const dow = date.getDay();
     
+    // Today
     if (d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear()) {
       el.classList.add('today');
     }
     
-    // Race day marking
+    // Current viewed week highlight
+    if (currentWeekMonday) {
+      const weekEnd = new Date(currentWeekMonday.getTime() + 6 * 86400000);
+      const thisDate = new Date(calYear, calMonth, d);
+      thisDate.setHours(0,0,0,0);
+      if (thisDate >= currentWeekMonday && thisDate <= weekEnd) {
+        el.classList.add('current-week');
+      }
+    }
+    
+    // Type marking
     if (isRaceDay(calYear, calMonth, d)) {
       el.classList.add('race');
-    } else if (isHoliday(calYear, calMonth, d)) {
+    } else if (getHoliday(calYear, calMonth, d)) {
       el.classList.add('holiday');
     } else if (dow === 1 || dow === 0) {
       el.classList.add('rest');
@@ -1435,7 +1502,7 @@ function renderCalendar() {
       el.classList.add('training');
     }
     
-    // Selected state
+    // Selected
     if (selectedDate && selectedDate.year === calYear && selectedDate.month === calMonth && selectedDate.day === d) {
       el.classList.add('selected');
     }
@@ -1443,7 +1510,6 @@ function renderCalendar() {
     const dayNum = d;
     el.onclick = () => {
       showPageForDate(calYear, calMonth, dayNum);
-      renderCalendar();
     };
     
     grid.appendChild(el);
@@ -1457,13 +1523,13 @@ function changeMonth(delta) {
   renderCalendar();
 }
 
-// Initialize: show today's page
+// Initialize
 const initNow = new Date();
-const initDow = initNow.getDay();
-currentPage = initDow === 0 ? 6 : initDow - 1;
 selectedDate = { year: initNow.getFullYear(), month: initNow.getMonth(), day: initNow.getDate() };
+currentWeekMonday = getMonday(initNow);
+calMonth = initNow.getMonth();
+calYear = initNow.getFullYear();
 showPageForDate(initNow.getFullYear(), initNow.getMonth(), initNow.getDate());
-renderCalendar();
 </script>
 </body>
 </html>
