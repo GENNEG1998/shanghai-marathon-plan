@@ -422,7 +422,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     </div>
 
     <!-- 方案A -->
-    <div class="card">
+    <div class="card week-card" data-weeks="1-4">
       <div class="card-title">方案A：基础期 W1-4（同周二匀速跑）</div>
       <div class="card-subtitle">前4周周四和周二一样，先建立连续跑的能力</div>
       <div style="background:#e3f2fd;border-radius:12px;padding:16px;margin-top:8px;">
@@ -437,7 +437,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     </div>
 
     <!-- 方案B -->
-    <div class="card">
+    <div class="card week-card" data-weeks="5-10">
       <div class="card-title">方案B：进阶期 W5-10（法特莱克变速跑）</div>
       <div class="card-subtitle">"法特莱克"就是在慢跑中随机加速冲刺，模拟比赛中的加速</div>
       <div style="background:#e3f2fd;border-radius:12px;padding:16px;margin-top:8px;">
@@ -461,7 +461,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     </div>
 
     <!-- 方案C -->
-    <div class="card">
+    <div class="card week-card" data-weeks="11-29">
       <div class="card-title">方案C：强化/巅峰期 W11+（正式间歇跑）</div>
       <div class="card-subtitle">快跑2分钟+慢跑2分钟交替，提升速度耐力</div>
       <div style="background:#e3f2fd;border-radius:12px;padding:16px;margin-top:8px;">
@@ -906,7 +906,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     </div>
 
     <!-- 端午节 -->
-    <div class="card">
+    <div class="card holiday-card" data-holiday="端午节">
       <div class="card-title">端午节 · 6月19日-21日（W5 进阶期）</div>
       <div class="card-subtitle">周五+周六+周日 共3天 | 健身房可能关门</div>
       <table class="param-table">
@@ -947,7 +947,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     </div>
 
     <!-- 中秋节 -->
-    <div class="card">
+    <div class="card holiday-card" data-holiday="中秋节">
       <div class="card-title">中秋节 · 9月25日-27日（W19 巅峰期）</div>
       <div class="card-subtitle">周五+周六+周日 共3天 | 正值巅峰训练期，不能松懈</div>
       <table class="param-table">
@@ -979,7 +979,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     </div>
 
     <!-- 国庆节 -->
-    <div class="card">
+    <div class="card holiday-card" data-holiday="国庆节">
       <div class="card-title" style="color:#E24B4A;">国庆节 · 10月1日-7日（W20 巅峰/恢复周）</div>
       <div class="card-subtitle">整整7天！这是最长的一次无健身房期间 | 但也是恢复周，压力不大</div>
       <div style="background:#e8f5e9;border-radius:12px;padding:14px;margin-bottom:12px;border-left:3px solid #34c759;">
@@ -1397,6 +1397,22 @@ function showPage(idx) {
     document.querySelectorAll('.page-nav button')[idx].classList.add('active');
   }
   currentPage = idx;
+  
+  // Filter week-specific cards on Thursday (page3)
+  const weekNum = currentWeekMonday ? getTrainingWeek(currentWeekMonday) : 1;
+  document.querySelectorAll('.week-card').forEach(card => {
+    const range = card.dataset.weeks.split('-').map(Number);
+    const inRange = weekNum >= range[0] && weekNum <= range[1];
+    card.style.display = inRange ? '' : 'none';
+  });
+  
+  // Filter holiday-specific cards on holiday page (page8)
+  if (idx === 8 && selectedDate) {
+    const holidayName = getHoliday(selectedDate.year, selectedDate.month, selectedDate.day);
+    document.querySelectorAll('.holiday-card').forEach(card => {
+      card.style.display = (card.dataset.holiday === holidayName) ? '' : 'none';
+    });
+  }
 }
 
 function updateWeekIndicator() {
