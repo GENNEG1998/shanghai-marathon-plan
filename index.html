@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026上马全程训练计划</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f7; color: #1d1d1f; min-height: 100vh; }
+.container { max-width: 800px; margin: 0 auto; padding: 20px; }
+
+/* Header */
+.header { text-align: center; margin-bottom: 24px; }
+.header h1 { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+.header .subtitle { font-size: 13px; color: #86868b; }
+.current-time { font-size: 28px; font-weight: 300; color: #1d1d1f; margin: 12px 0 4px; letter-spacing: -0.5px; }
+.current-date { font-size: 14px; color: #86868b; margin-bottom: 16px; }
+
+/* Calendar */
+.calendar { background: white; border-radius: 16px; padding: 20px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.cal-header h3 { font-size: 16px; font-weight: 600; }
+.cal-nav { display: flex; gap: 8px; }
+.cal-nav button { width: 30px; height: 30px; border-radius: 50%; border: none; background: #f5f5f7; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+.cal-nav button:hover { background: #e8e8ed; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+.cal-grid .day-name { font-size: 11px; color: #86868b; padding: 6px 0; font-weight: 500; }
+.cal-grid .day { font-size: 13px; padding: 8px 4px; border-radius: 50%; cursor: pointer; position: relative; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; margin: 0 auto; }
+.cal-grid .day:hover { background: #f0f0f5; }
+.cal-grid .day.today { background: #0071e3; color: white; font-weight: 600; }
+.cal-grid .day.training { position: relative; }
+.cal-grid .day.training::after { content: ''; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: #34c759; }
+.cal-grid .day.today.training::after { background: white; }
+.cal-grid .day.rest::after { content: ''; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: #ff9500; }
+.cal-grid .day.empty { visibility: hidden; }
+
+/* Pagination */
+.page-nav { display: flex; justify-content: center; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+.page-nav button { padding: 8px 16px; border: none; border-radius: 20px; background: white; font-size: 13px; cursor: pointer; font-weight: 500; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+.page-nav button:hover { background: #e8e8ed; }
+.page-nav button.rest-day { color: #86868b; }
+.page-nav button.run-day { color: #0071e3; }
+.page-nav button.strength-day { color: #af52de; }
+.page-nav button.long-day { color: #ff9500; }
+.page-nav button.recovery-day { color: #34c759; }
+.page-nav button.active { background: #0071e3; color: white !important; }
+
+/* Cards */
+.page { display: none; animation: fadeIn 0.3s ease; }
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.card { background: white; border-radius: 16px; padding: 24px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.card-title { font-size: 18px; font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+.card-subtitle { font-size: 13px; color: #86868b; margin-bottom: 16px; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+.badge-run { background: #e3f2fd; color: #0071e3; }
+.badge-strength { background: #f3e5f5; color: #af52de; }
+.badge-long { background: #fff3e0; color: #ff9500; }
+.badge-recovery { background: #e8f5e9; color: #34c759; }
+.badge-rest { background: #f5f5f7; color: #86868b; }
+.badge-cross { background: #e0f7fa; color: #00acc1; }
+
+/* Timeline */
+.timeline { position: relative; padding-left: 24px; }
+.timeline::before { content: ''; position: absolute; left: 8px; top: 8px; bottom: 8px; width: 2px; background: #e8e8ed; border-radius: 1px; }
+.timeline-item { position: relative; padding-bottom: 16px; }
+.timeline-item:last-child { padding-bottom: 0; }
+.timeline-item::before { content: ''; position: absolute; left: -20px; top: 6px; width: 10px; height: 10px; border-radius: 50%; background: #0071e3; border: 2px solid white; box-shadow: 0 0 0 2px #e8e8ed; }
+.timeline-item.warmup::before { background: #ff9500; }
+.timeline-item.main::before { background: #0071e3; }
+.timeline-item.cooldown::before { background: #34c759; }
+.timeline-item .time { font-size: 12px; color: #86868b; font-weight: 500; }
+.timeline-item .content { font-size: 14px; margin-top: 2px; }
+.timeline-item .detail { font-size: 12px; color: #6e6e73; margin-top: 4px; line-height: 1.5; }
+
+/* Parameters table */
+.param-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
+.param-table th { text-align: left; padding: 8px 12px; background: #f5f5f7; font-weight: 500; font-size: 12px; color: #6e6e73; }
+.param-table td { padding: 8px 12px; border-bottom: 1px solid #f0f0f5; }
+.param-table tr:last-child td { border-bottom: none; }
+.param-highlight { color: #0071e3; font-weight: 600; }
+
+/* Exercise cards */
+.exercise-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+@media (max-width: 600px) { .exercise-grid { grid-template-columns: 1fr; } }
+.exercise-item { background: #f9f9fb; border-radius: 12px; padding: 16px; }
+.exercise-item h4 { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.exercise-item .sets { font-size: 12px; color: #34c759; font-weight: 500; margin-bottom: 8px; }
+.exercise-item .tips { font-size: 11px; color: #6e6e73; line-height: 1.5; }
+.exercise-item svg { display: block; margin: 8px auto; }
+
+/* Stretch section */
+.stretch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+@media (max-width: 600px) { .stretch-grid { grid-template-columns: 1fr; } }
+.stretch-item { background: #f0faf4; border-radius: 12px; padding: 14px; }
+.stretch-item h4 { font-size: 13px; font-weight: 600; color: #1a7a4c; margin-bottom: 2px; }
+.stretch-item .duration { font-size: 11px; color: #34c759; font-weight: 500; margin-bottom: 6px; }
+.stretch-item .how { font-size: 11px; color: #6e6e73; line-height: 1.5; }
+.stretch-item svg { display: block; margin: 6px auto; }
+
+/* Phase indicator */
+.phase-bar { display: flex; gap: 4px; margin-bottom: 16px; }
+.phase-segment { height: 4px; border-radius: 2px; flex: 1; }
+.phase-base { background: #85B7EB; }
+.phase-adv { background: #5DCAA5; }
+.phase-intense { background: #EF9F27; }
+.phase-peak { background: #E24B4A; }
+.phase-taper { background: #888780; }
+
+/* Tips */
+.tip-box { background: #fffbeb; border-radius: 12px; padding: 14px 16px; margin-top: 12px; border-left: 3px solid #ff9500; }
+.tip-box p { font-size: 12px; color: #6e6e73; line-height: 1.6; }
+.tip-box strong { color: #1d1d1f; }
+
+/* Footer */
+.footer { text-align: center; padding: 24px 0; font-size: 12px; color: #86868b; }
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <h1>2026 上海马拉松训练计划</h1>
+    <div class="subtitle">170cm / 70kg | 有户外+力量基础 | 目标轻松完赛5:30 | 29周训练</div>
+    <div class="current-time" id="currentTime">--:--:--</div>
+    <div class="current-date" id="currentDate">----年--月--日 星期-</div>
+  </div>
+
+  <!-- Calendar -->
+  <div class="calendar">
+    <div class="cal-header">
+      <button class="cal-nav-btn" onclick="changeMonth(-1)" style="width:30px;height:30px;border-radius:50%;border:none;background:#f5f5f7;cursor:pointer;">&#9664;</button>
+      <h3 id="calMonth">2026年5月</h3>
+      <button class="cal-nav-btn" onclick="changeMonth(1)" style="width:30px;height:30px;border-radius:50%;border:none;background:#f5f5f7;cursor:pointer;">&#9654;</button>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div style="display:flex;gap:16px;justify-content:center;margin-top:12px;font-size:11px;color:#86868b;">
+      <span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#34c759;margin-right:4px;vertical-align:middle;"></span>训练日</span>
+      <span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#ff9500;margin-right:4px;vertical-align:middle;"></span>休息/恢复</span>
+      <span style="display:inline-block;width:18px;height:18px;border-radius:50%;background:#0071e3;color:white;text-align:center;line-height:18px;font-size:9px;margin-right:4px;vertical-align:middle;">18</span>今天</span>
+    </div>
+  </div>
+
+  <!-- Day Navigation -->
+  <div class="page-nav">
+    <button class="rest-day" onclick="showPage(0)">周一</button>
+    <button class="run-day" onclick="showPage(1)">周二</button>
+    <button class="strength-day" onclick="showPage(2)">周三</button>
+    <button class="run-day" onclick="showPage(3)">周四</button>
+    <button class="strength-day" onclick="showPage(4)">周五</button>
+    <button class="long-day" onclick="showPage(5)">周六</button>
+    <button class="recovery-day" onclick="showPage(6)">周日</button>
+    <button style="color:#E24B4A;" onclick="showPage(7)">比赛日</button>
+  </div>
+
+  <!-- Phase bar -->
+  <div class="phase-bar">
+    <div class="phase-segment phase-base" title="基础期 W1-4"></div>
+    <div class="phase-segment phase-adv" title="进阶期 W5-10"></div>
+    <div class="phase-segment phase-adv" title="进阶期 W5-10"></div>
+    <div class="phase-segment phase-intense" title="强化期 W11-17"></div>
+    <div class="phase-segment phase-intense" title="强化期 W11-17"></div>
+    <div class="phase-segment phase-intense" title="强化期 W11-17"></div>
+    <div class="phase-segment phase-peak" title="巅峰期 W18-23"></div>
+    <div class="phase-segment phase-peak" title="巅峰期 W18-23"></div>
+    <div class="phase-segment phase-taper" title="减量期 W24-29"></div>
+    <div class="phase-segment phase-taper" title="减量期 W24-29"></div>
+  </div>
+
+  <!-- Page 0: Monday -->
+  <div class="page" id="page0">
+    <div class="card">
+      <div class="card-title"><span class="badge badge-rest">休息日</span> 周一 - 完全休息</div>
+      <div class="card-subtitle">让身体从周末长距离中恢复</div>
+      <svg viewBox="0 0 400 120" style="width:100%;max-width:400px;display:block;margin:16px auto;">
+        <rect x="0" y="0" width="400" height="120" rx="12" fill="#f9f9fb"/>
+        <text x="200" y="45" text-anchor="middle" font-size="32" fill="#86868b">&#128564;</text>
+        <text x="200" y="75" text-anchor="middle" font-size="14" fill="#6e6e73" font-family="sans-serif">今天不训练 - 好好休息</text>
+        <text x="200" y="100" text-anchor="middle" font-size="12" fill="#86868b" font-family="sans-serif">可以散步、泡脚、早睡 | 充足睡眠是最好的恢复</text>
+      </svg>
+      <div class="tip-box">
+        <p><strong>为什么周一休息？</strong> 周六长距离跑对身体冲击最大，需要48小时以上恢复。周一完全休息让肌肉修复和生长，是整个训练周期中不可缺少的环节。不训练 ≠ 偷懒，这是科学。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page 1: Tuesday -->
+  <div class="page" id="page1">
+    <div class="card">
+      <div class="card-title"><span class="badge badge-run">跑步日</span> 周二 - 跑步机训练</div>
+      <div class="card-subtitle">20:00 - 21:00 | 公司健身房 | 总时长60分钟</div>
+      <div class="timeline">
+        <div class="timeline-item warmup">
+          <div class="time">20:00 - 20:10 [10min]</div>
+          <div class="content">热身快走</div>
+          <div class="detail">跑步机速度 6.0-6.5 km/h | 坡度 1% | 逐步提速让身体预热</div>
+        </div>
+        <div class="timeline-item main">
+          <div class="time">20:10 - 20:42 [32min]</div>
+          <div class="content">主训练 - 连续慢跑</div>
+          <div class="detail">基础期(W1-4)：连续跑25-32min，速度 8.0-8.5 km/h<br>进阶期(W5-10)：连续跑30-40min，速度 8.5-9.0 km/h<br>坡度 1% | 以"能说出完整句子但不想唱歌"为标准</div>
+        </div>
+        <div class="timeline-item cooldown">
+          <div class="time">20:42 - 20:47 [5min]</div>
+          <div class="content">放松走</div>
+          <div class="detail">速度降到 5.0-5.5 km/h | 坡度 0% | 让心率缓慢下降</div>
+        </div>
+        <div class="timeline-item cooldown">
+          <div class="time">20:45 - 21:00 [15min]</div>
+          <div class="content">拉伸（详见拉伸页）</div>
+          <div class="detail">小腿→股四头肌→腘绳肌→髋屈肌→臀部→髂胫束</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">跑步机参数设置</div>
+      <div class="card-subtitle">根据训练阶段逐步提升速度，坡度保持1%模拟户外</div>
+      <table class="param-table">
+        <thead><tr><th>训练环节</th><th>基础期 W1-4</th><th>进阶期 W5-10</th><th>强化期 W11-17</th><th>巅峰期 W18+</th></tr></thead>
+        <tbody>
+          <tr><td>热身快走</td><td>6.0</td><td>6.5</td><td>6.5</td><td>6.5</td></tr>
+          <tr><td>慢跑</td><td class="param-highlight">8.0-8.5</td><td class="param-highlight">8.5-9.0</td><td class="param-highlight">9.0-9.5</td><td class="param-highlight">9.5-10.0</td></tr>
+          <tr><td>走路段</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+          <tr><td>放松走</td><td>5.0</td><td>5.5</td><td>5.5</td><td>5.5</td></tr>
+        </tbody>
+      </table>
+      <div class="tip-box">
+        <p><strong>跑步机小贴士：</strong>不要盯数据焦虑！用"能说完整句话"判断是否太快。坡度1%=模拟户外风阻。毛巾和水壶放旁边，每10分钟小口喝水。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page 2: Wednesday -->
+  <div class="page" id="page2">
+    <div class="card">
+      <div class="card-title"><span class="badge badge-strength">力量日</span> 周三 - 下肢+核心</div>
+      <div class="card-subtitle">20:00 - 21:00 | 公司健身房 | 总时长60分钟</div>
+      <div class="timeline">
+        <div class="timeline-item warmup">
+          <div class="time">20:00 - 20:08 [8min]</div>
+          <div class="content">热身</div>
+          <div class="detail">跑步机快走 5.5km/h 或椭圆机低阻力 | 微微出汗即可</div>
+        </div>
+        <div class="timeline-item main">
+          <div class="time">20:08 - 20:35 [27min]</div>
+          <div class="content">下肢力量训练</div>
+          <div class="detail">深蹲 → 罗马尼亚硬拉 → 保加利亚分腿蹲 → 臀桥</div>
+        </div>
+        <div class="timeline-item main">
+          <div class="time">20:35 - 20:47 [12min]</div>
+          <div class="content">核心训练</div>
+          <div class="detail">平板支撑 → 侧平板 → 死虫式 → 俄罗斯转体</div>
+        </div>
+        <div class="timeline-item cooldown">
+          <div class="time">20:47 - 21:00 [13min]</div>
+          <div class="content">拉伸放松</div>
+          <div class="detail">全身静态拉伸，重点：髋屈肌、小腿、股四头肌</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">下肢力量动作</div>
+      <div class="card-subtitle">动作质量优先于重量，宁轻勿假</div>
+      <div class="exercise-grid">
+        <div class="exercise-item">
+          <h4>1. 高脚杯深蹲</h4>
+          <div class="sets">3-4组 x 12次 | 休息60s</div>
+          <svg viewBox="0 0 160 100" width="160" height="100">
+            <line x1="40" y1="20" x2="40" y2="40" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="40" cy="15" r="5" fill="#f3e5f5" stroke="#af52de" stroke-width="2"/>
+            <line x1="40" y1="40" x2="40" y2="60" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="40" y1="60" x2="35" y2="80" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="40" y1="60" x2="45" y2="80" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <text x="40" y="95" text-anchor="middle" font-size="9" fill="#86868b">起始</text>
+            <circle cx="110" cy="30" r="5" fill="#f3e5f5" stroke="#af52de" stroke-width="2"/>
+            <line x1="110" y1="35" x2="110" y2="48" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="110" y1="48" x2="105" y2="60" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="105" y1="60" x2="100" y2="72" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="100" y1="72" x2="103" y2="82" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="105" y1="60" x2="115" y2="72" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="115" y1="72" x2="118" y2="82" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <text x="110" y="95" text-anchor="middle" font-size="9" fill="#86868b">底部</text>
+          </svg>
+          <div class="tips">双脚与肩同宽，脚尖外展15-30度<br>哑铃抱胸前，蹲到大腿平行地面<br>膝盖与脚尖同向，背部挺直</div>
+        </div>
+        <div class="exercise-item">
+          <h4>2. 罗马尼亚硬拉</h4>
+          <div class="sets">3-4组 x 12次 | 休息60s</div>
+          <svg viewBox="0 0 160 100" width="160" height="100">
+            <circle cx="40" cy="15" r="5" fill="#f3e5f5" stroke="#af52de" stroke-width="2"/>
+            <line x1="40" y1="20" x2="40" y2="50" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="40" y1="50" x2="38" y2="78" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="40" y1="50" x2="42" y2="78" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="40" y1="35" x2="33" y2="55" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="40" y1="35" x2="47" y2="55" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <text x="40" y="92" text-anchor="middle" font-size="9" fill="#86868b">起始</text>
+            <circle cx="115" cy="28" r="5" fill="#f3e5f5" stroke="#af52de" stroke-width="2"/>
+            <line x1="115" y1="33" x2="125" y2="48" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="125" y1="48" x2="125" y2="60" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="125" y1="60" x2="122" y2="78" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="125" y1="60" x2="128" y2="78" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="120" y1="42" x2="112" y2="58" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="120" y1="42" x2="115" y2="60" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <text x="120" y="92" text-anchor="middle" font-size="9" fill="#86868b">底部</text>
+          </svg>
+          <div class="tips">臀部向后推（像关冰箱门）<br>背部平直如桌面，膝盖微屈<br>感受后大腿拉伸后夹臀起身</div>
+        </div>
+        <div class="exercise-item">
+          <h4>3. 保加利亚分腿蹲</h4>
+          <div class="sets">3组 x 10次/每侧 | 休息60s</div>
+          <svg viewBox="0 0 160 100" width="160" height="100">
+            <circle cx="60" cy="20" r="5" fill="#f3e5f5" stroke="#af52de" stroke-width="2"/>
+            <line x1="60" y1="25" x2="60" y2="45" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="60" y1="45" x2="55" y2="60" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="55" y1="60" x2="50" y2="78" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="55" y1="60" x2="75" y2="65" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="75" y1="65" x2="85" y2="70" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <rect x="82" y="68" width="22" height="10" rx="3" fill="#f5f5f7" stroke="#d1d1d6" stroke-width="1"/>
+            <line x1="35" y1="80" x2="100" y2="80" stroke="#d1d1d6" stroke-width="1" stroke-dasharray="3,2"/>
+          </svg>
+          <div class="tips">后脚脚背搭凳子上<br>前膝不超过脚尖太多，不内扣<br>新手先徒手，稳定后持哑铃</div>
+        </div>
+        <div class="exercise-item">
+          <h4>4. 臀桥</h4>
+          <div class="sets">3组 x 15次 | 顶端停2秒</div>
+          <svg viewBox="0 0 160 100" width="160" height="100">
+            <circle cx="30" cy="68" r="4" fill="#f3e5f5" stroke="#af52de" stroke-width="2"/>
+            <line x1="34" y1="68" x2="65" y2="68" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="65" y1="68" x2="75" y2="55" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="75" y1="55" x2="80" y2="68" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="20" y1="72" x2="90" y2="72" stroke="#d1d1d6" stroke-width="1" stroke-dasharray="3,2"/>
+            <text x="55" y="88" text-anchor="middle" font-size="9" fill="#86868b">躺平</text>
+            <circle cx="105" cy="55" r="4" fill="#f3e5f5" stroke="#af52de" stroke-width="2"/>
+            <line x1="109" y1="55" x2="130" y2="45" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="130" y1="45" x2="142" y2="50" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="142" y1="50" x2="145" y2="72" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="100" y1="72" x2="155" y2="72" stroke="#d1d1d6" stroke-width="1" stroke-dasharray="3,2"/>
+            <text x="130" y="88" text-anchor="middle" font-size="9" fill="#86868b">抬臀</text>
+            <path d="M130,42 L130,35" stroke="#ff9500" stroke-width="1.5" fill="none" marker-end="url(#arrowOrange)"/>
+          </svg>
+          <div class="tips">仰卧屈膝双脚踩地<br>臀部发力顶起至身体成一线<br>顶端挤压臀部2秒再放下</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">核心训练动作</div>
+      <div class="exercise-grid">
+        <div class="exercise-item">
+          <h4>5. 平板支撑</h4>
+          <div class="sets">3组 x 30-60秒</div>
+          <svg viewBox="0 0 160 60" width="160" height="60">
+            <circle cx="25" cy="22" r="4" fill="#f3e5f5" stroke="#af52de" stroke-width="2"/>
+            <line x1="29" y1="24" x2="90" y2="28" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="90" y1="28" x2="120" y2="42" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="25" y1="26" x2="25" y2="45" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="120" y1="42" x2="120" y2="45" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="15" y1="47" x2="130" y2="47" stroke="#d1d1d6" stroke-width="1" stroke-dasharray="3,2"/>
+            <line x1="25" y1="20" x2="120" y2="24" stroke="#34c759" stroke-width="1" stroke-dasharray="2,2"/>
+          </svg>
+          <div class="tips">前臂+脚尖着地，身体一条线<br>不塌腰不翘臀，收紧腹部</div>
+        </div>
+        <div class="exercise-item">
+          <h4>6. 死虫式</h4>
+          <div class="sets">3组 x 10次/每侧</div>
+          <svg viewBox="0 0 160 60" width="160" height="60">
+            <circle cx="30" cy="40" r="4" fill="#f3e5f5" stroke="#af52de" stroke-width="2"/>
+            <line x1="34" y1="40" x2="80" y2="40" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="50" y1="37" x2="40" y2="22" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="50" y1="43" x2="42" y2="25" stroke="#af52de" stroke-width="2" stroke-linecap="round" stroke-dasharray="3,2"/>
+            <line x1="80" y1="37" x2="95" y2="22" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="80" y1="43" x2="100" y2="43" stroke="#af52de" stroke-width="2" stroke-linecap="round" stroke-dasharray="3,2"/>
+            <line x1="20" y1="45" x2="110" y2="45" stroke="#d1d1d6" stroke-width="1" stroke-dasharray="3,2"/>
+            <text x="130" y="25" font-size="8" fill="#ff9500">对侧</text>
+            <text x="130" y="35" font-size="8" fill="#ff9500">伸展</text>
+          </svg>
+          <div class="tips">仰卧，对侧手脚同时伸出<br>腰部贴地，全程核心收紧</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page 3: Thursday -->
+  <div class="page" id="page3">
+    <div class="card">
+      <div class="card-title"><span class="badge badge-run">跑步日</span> 周四 - 变速跑训练</div>
+      <div class="card-subtitle">20:00 - 21:00 | 公司健身房 | 总时长60分钟</div>
+      <div class="timeline">
+        <div class="timeline-item warmup">
+          <div class="time">20:00 - 20:10 [10min]</div>
+          <div class="content">热身快走</div>
+          <div class="detail">跑步机速度 6.0-6.5 km/h | 坡度 1% | 身体微微出汗即可</div>
+        </div>
+        <div class="timeline-item main">
+          <div class="time">20:10 - 20:42 [32min]</div>
+          <div class="content">主训练（按当前阶段选择下方对应方案）</div>
+          <div class="detail">基础期做方案A | 进阶期做方案B | 强化期后做方案C</div>
+        </div>
+        <div class="timeline-item cooldown">
+          <div class="time">20:42 - 20:47 [5min]</div>
+          <div class="content">放松走</div>
+          <div class="detail">速度 5.0-5.5 km/h | 坡度 0% | 心率降到120以下</div>
+        </div>
+        <div class="timeline-item cooldown">
+          <div class="time">20:47 - 21:00 [13min]</div>
+          <div class="content">拉伸（重点小腿+股四头肌）</div>
+          <div class="detail">间歇跑后肌肉负荷大，多花时间拉小腿和大腿前侧</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 方案A -->
+    <div class="card">
+      <div class="card-title">方案A：基础期 W1-4（同周二匀速跑）</div>
+      <div class="card-subtitle">前4周周四和周二一样，先建立连续跑的能力</div>
+      <div style="background:#e3f2fd;border-radius:12px;padding:16px;margin-top:8px;">
+        <p style="font-size:14px;font-weight:600;margin-bottom:8px;">操作方法：</p>
+        <p style="font-size:13px;line-height:2;">
+          1. 跑步机调到 <strong style="color:#0071e3;">8.0-8.5 km/h</strong>，坡度 1%<br>
+          2. 连续跑 <strong>25-32分钟</strong>，不停<br>
+          3. 如果跑不动了就降到 7.5，不要停下来走<br>
+          4. 全程保持"能说出完整句子但不想唱歌"的强度
+        </p>
+      </div>
+    </div>
+
+    <!-- 方案B -->
+    <div class="card">
+      <div class="card-title">方案B：进阶期 W5-10（法特莱克变速跑）</div>
+      <div class="card-subtitle">"法特莱克"就是在慢跑中随机加速冲刺，模拟比赛中的加速</div>
+      <div style="background:#e3f2fd;border-radius:12px;padding:16px;margin-top:8px;">
+        <p style="font-size:14px;font-weight:600;margin-bottom:8px;">具体操作（照着做）：</p>
+        <p style="font-size:13px;line-height:2.2;">
+          1. 跑步机调到 <strong style="color:#0071e3;">8.5 km/h</strong> 开始慢跑，坡度1%<br>
+          2. 跑 <strong>3分钟</strong> 之后...<br>
+          3. 按 <strong style="color:#E24B4A;">加速键</strong> 把速度调到 <strong style="color:#E24B4A;">10.0 km/h</strong><br>
+          4. 快速跑 <strong style="color:#E24B4A;">30秒</strong>（大概跑150米的感觉）<br>
+          5. 30秒到了，按 <strong>减速键</strong> 回到 8.5 km/h<br>
+          6. 慢跑 <strong>2分钟</strong> 恢复呼吸<br>
+          7. 然后再次加速到10.0跑30秒...<br>
+          8. 重复 <strong>6次</strong> 加速<br>
+          9. 最后慢跑到时间结束
+        </p>
+      </div>
+      <div style="background:#f9f9fb;border-radius:12px;padding:14px;margin-top:12px;">
+        <p style="font-size:12px;color:#6e6e73;"><strong>时间分配：</strong>慢跑3min + (快30s + 慢2min) x 6次 = 3 + 15 = 18min，加上前后慢跑共约30-32min</p>
+        <p style="font-size:12px;color:#6e6e73;margin-top:4px;"><strong>感觉对标：</strong>加速时呼吸明显加重，但30秒不至于喘不过气。如果30秒都坚持不了，说明速度太快，改成9.5试试。</p>
+      </div>
+    </div>
+
+    <!-- 方案C -->
+    <div class="card">
+      <div class="card-title">方案C：强化/巅峰期 W11+（正式间歇跑）</div>
+      <div class="card-subtitle">快跑2分钟+慢跑2分钟交替，提升速度耐力</div>
+      <div style="background:#e3f2fd;border-radius:12px;padding:16px;margin-top:8px;">
+        <p style="font-size:14px;font-weight:600;margin-bottom:8px;">具体操作（照着做）：</p>
+        <p style="font-size:13px;line-height:2.2;">
+          1. 先慢跑 <strong>5分钟</strong> 热身（8.5 km/h），让心率升到130+<br>
+          2. 然后开始间歇循环：<br>
+          <span style="display:inline-block;margin-left:16px;"> <strong style="color:#E24B4A;">快跑 2分钟</strong>：速度调到 <strong style="color:#E24B4A;">10.5-11.0 km/h</strong></span><br>
+          <span style="display:inline-block;margin-left:16px;"> <strong style="color:#0071e3;">慢跑 2分钟</strong>：速度降到 <strong style="color:#0071e3;">7.0-7.5 km/h</strong>（走也行）</span><br>
+          3. 循环 <strong>6组</strong>（6快+6慢 = 24分钟）<br>
+          4. 最后慢跑3分钟收尾
+        </p>
+      </div>
+      <div style="background:#f9f9fb;border-radius:12px;padding:14px;margin-top:12px;">
+        <p style="font-size:12px;color:#6e6e73;"><strong>总时间：</strong>5min热身 + 24min间歇 + 3min收尾 = 32min</p>
+        <p style="font-size:12px;color:#6e6e73;margin-top:4px;"><strong>感觉对标：</strong>快跑2分钟结束时应该呼吸很重、不太想说话，但不是完全喘不上来。慢跑2分钟内呼吸应该基本恢复。</p>
+        <p style="font-size:12px;color:#6e6e73;margin-top:4px;"><strong>跑步机操作技巧：</strong>提前5秒开始按加速/减速键，因为跑步机变速有延迟。或者用"跨带"技巧——脚踩两侧护栏，先调好速度再跨回去。</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">各阶段参数速查表</div>
+      <table class="param-table">
+        <thead><tr><th>阶段</th><th>快跑速度</th><th>快跑时间</th><th>慢跑恢复速度</th><th>慢跑时间</th><th>循环次数</th></tr></thead>
+        <tbody>
+          <tr><td style="font-weight:500;">W1-4 基础期</td><td>不做变速</td><td>-</td><td>8.0-8.5 匀速跑</td><td>全程30min</td><td>-</td></tr>
+          <tr><td style="font-weight:500;">W5-10 进阶期</td><td class="param-highlight">10.0 km/h</td><td>30秒</td><td>8.5 km/h</td><td>2分钟</td><td>6次</td></tr>
+          <tr><td style="font-weight:500;">W11-17 强化期</td><td class="param-highlight">10.5 km/h</td><td>2分钟</td><td>7.0-7.5 km/h</td><td>2分钟</td><td>6组</td></tr>
+          <tr><td style="font-weight:500;">W18-23 巅峰期</td><td class="param-highlight">11.0 km/h</td><td>2分钟</td><td>7.5 km/h</td><td>2分钟</td><td>7-8组</td></tr>
+        </tbody>
+      </table>
+      <div class="tip-box">
+        <p><strong>为什么周四要变速？</strong>周二是轻松匀速跑（练有氧基础），周四变速跑是练"速度储备"。你比赛配速7:49/km，平时训练能跑到6:00/km的话，7:49就会非常轻松。这就是变速跑的意义——让比赛配速变成你的"慢跑"。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page 4: Friday -->
+  <div class="page" id="page4">
+    <div class="card">
+      <div class="card-title"><span class="badge badge-strength">力量</span><span class="badge badge-cross">交叉训练</span> 周五 - 上肢+有氧</div>
+      <div class="card-subtitle">20:00 - 21:00 | 公司健身房 | 总时长60分钟</div>
+      <div class="timeline">
+        <div class="timeline-item warmup">
+          <div class="time">20:00 - 20:10 [10min]</div>
+          <div class="content">有氧热身 - 划船机/椭圆机</div>
+          <div class="detail">椭圆机：阻力 3-5 | 坡度 5-8 | 步频 100-110 | 心率 110-130</div>
+        </div>
+        <div class="timeline-item main">
+          <div class="time">20:10 - 20:30 [20min]</div>
+          <div class="content">上肢力量训练（4个动作）</div>
+          <div class="detail">俯卧撑 → 哑铃划船 → 肩推 → 面拉 | 按下方顺序执行</div>
+        </div>
+        <div class="timeline-item main">
+          <div class="time">20:30 - 20:45 [15min]</div>
+          <div class="content">有氧交叉训练 - 椭圆机</div>
+          <div class="detail">椭圆机：阻力 6-8 | 坡度 8-12 | 步频 120-140 | 心率 130-155</div>
+        </div>
+        <div class="timeline-item cooldown">
+          <div class="time">20:45 - 21:00 [15min]</div>
+          <div class="content">拉伸放松</div>
+          <div class="detail">全身拉伸，重点：胸部打开、肩部环绕、上背猫牛伸展</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">椭圆机参数设置</div>
+      <table class="param-table">
+        <thead><tr><th>用途</th><th>阻力 (/20)</th><th>坡度</th><th>步频 SPM</th><th>心率目标</th></tr></thead>
+        <tbody>
+          <tr><td>热身(10min)</td><td>3-5</td><td>5-8</td><td>100-110</td><td>110-130</td></tr>
+          <tr><td class="param-highlight">有氧训练(15min)</td><td class="param-highlight">6-8</td><td class="param-highlight">8-12</td><td class="param-highlight">120-140</td><td class="param-highlight">130-155</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">上肢力量动作（含示意图）</div>
+      <div class="card-subtitle">跑全马后半程上身疲劳会导致跑姿变形，上肢力量帮你"不散架"</div>
+      <div class="exercise-grid">
+        <div class="exercise-item">
+          <h4>1. 俯卧撑</h4>
+          <div class="sets">3组 x 12-15次 | 休息45s</div>
+          <svg viewBox="0 0 160 70" width="160" height="70">
+            <circle cx="25" cy="18" r="4" fill="#e0f7fa" stroke="#00acc1" stroke-width="2"/>
+            <line x1="29" y1="20" x2="95" y2="24" stroke="#00acc1" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="95" y1="24" x2="130" y2="40" stroke="#00acc1" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="130" y1="40" x2="130" y2="48" stroke="#00acc1" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="25" y1="22" x2="25" y2="48" stroke="#00acc1" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="15" y1="50" x2="140" y2="50" stroke="#d1d1d6" stroke-width="1" stroke-dasharray="3,2"/>
+            <text x="80" y="64" text-anchor="middle" font-size="8" fill="#86868b">身体一条直线，胸口尽量贴地</text>
+          </svg>
+          <div class="tips">双手略宽于肩，指尖朝前<br>下到胸口离地面一拳<br>撑起时手臂不要完全锁死<br><strong>做不了标准的：</strong>改跪姿俯卧撑</div>
+        </div>
+        <div class="exercise-item">
+          <h4>2. 哑铃单臂划船</h4>
+          <div class="sets">3组 x 12次每侧 | 休息45s</div>
+          <svg viewBox="0 0 160 70" width="160" height="70">
+            <circle cx="50" cy="15" r="4" fill="#e0f7fa" stroke="#00acc1" stroke-width="2"/>
+            <line x1="50" y1="19" x2="65" y2="35" stroke="#00acc1" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="65" y1="35" x2="80" y2="35" stroke="#00acc1" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="80" y1="35" x2="80" y2="50" stroke="#00acc1" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="65" y1="35" x2="50" y2="50" stroke="#00acc1" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="50" y1="50" x2="50" y2="55" stroke="#00acc1" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="65" y1="28" x2="65" y2="15" stroke="#00acc1" stroke-width="2.5" stroke-linecap="round"/>
+            <rect x="62" y="10" width="6" height="8" rx="2" fill="#e0f7fa" stroke="#00acc1" stroke-width="1.5"/>
+            <rect x="95" y="45" width="25" height="10" rx="3" fill="#f5f5f7" stroke="#d1d1d6" stroke-width="1"/>
+            <text x="107" y="62" text-anchor="middle" font-size="7" fill="#86868b">凳子</text>
+            <path d="M68,14 L68,8" stroke="#ff9500" stroke-width="1.2" fill="none"/>
+            <text x="120" y="20" font-size="8" fill="#ff9500">肘部贴身</text>
+            <text x="120" y="30" font-size="8" fill="#ff9500">向后拉</text>
+          </svg>
+          <div class="tips">一手一膝撑凳子，另一手持哑铃<br>肘部贴身向后拉到肋骨位置<br>背部保持平直不要转体<br><strong>重量：</strong>男生10-15kg起步</div>
+        </div>
+        <div class="exercise-item">
+          <h4>3. 哑铃坐姿肩推</h4>
+          <div class="sets">3组 x 12次 | 休息45s</div>
+          <svg viewBox="0 0 160 70" width="160" height="70">
+            <circle cx="80" cy="12" r="4" fill="#e0f7fa" stroke="#00acc1" stroke-width="2"/>
+            <line x1="80" y1="16" x2="80" y2="35" stroke="#00acc1" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="80" y1="35" x2="80" y2="50" stroke="#00acc1" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="80" y1="24" x2="65" y2="18" stroke="#00acc1" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="80" y1="24" x2="95" y2="18" stroke="#00acc1" stroke-width="2.5" stroke-linecap="round"/>
+            <rect x="60" y="14" width="8" height="6" rx="2" fill="#e0f7fa" stroke="#00acc1" stroke-width="1.5"/>
+            <rect x="92" y="14" width="8" height="6" rx="2" fill="#e0f7fa" stroke="#00acc1" stroke-width="1.5"/>
+            <path d="M64,12 L64,5" stroke="#ff9500" stroke-width="1.2" fill="none"/>
+            <path d="M96,12 L96,5" stroke="#ff9500" stroke-width="1.2" fill="none"/>
+            <text x="80" y="63" text-anchor="middle" font-size="8" fill="#86868b">坐凳上推哑铃过头顶</text>
+          </svg>
+          <div class="tips">坐凳子上，双手持哑铃举到耳旁<br>向上推到头顶上方（不锁死手肘）<br>缓慢放回耳旁位置<br><strong>重量：</strong>男生8-12kg每手起步</div>
+        </div>
+        <div class="exercise-item">
+          <h4>4. 绳索/弹力带面拉</h4>
+          <div class="sets">3组 x 15次 | 休息30s</div>
+          <svg viewBox="0 0 160 70" width="160" height="70">
+            <circle cx="100" cy="15" r="4" fill="#e0f7fa" stroke="#00acc1" stroke-width="2"/>
+            <line x1="100" y1="19" x2="100" y2="40" stroke="#00acc1" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="100" y1="40" x2="98" y2="55" stroke="#00acc1" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="100" y1="40" x2="102" y2="55" stroke="#00acc1" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="100" y1="28" x2="85" y2="22" stroke="#00acc1" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="100" y1="28" x2="115" y2="22" stroke="#00acc1" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="85" y1="22" x2="40" y2="25" stroke="#ff9500" stroke-width="1.5" stroke-dasharray="3,2"/>
+            <line x1="115" y1="22" x2="40" y2="25" stroke="#ff9500" stroke-width="1.5" stroke-dasharray="3,2"/>
+            <rect x="30" y="15" width="12" height="25" rx="3" fill="#f5f5f7" stroke="#d1d1d6" stroke-width="1"/>
+            <text x="36" y="62" text-anchor="middle" font-size="7" fill="#86868b">龙门架</text>
+            <text x="130" y="30" font-size="8" fill="#ff9500">拉到脸旁</text>
+            <text x="130" y="40" font-size="8" fill="#ff9500">夹紧肩胛</text>
+          </svg>
+          <div class="tips">绳索或弹力带固定在面部高度<br>双手握绳向脸两侧拉开<br>感觉肩胛骨向中间夹紧<br><strong>替代：</strong>没绳索用弹力带绑门把手</div>
+        </div>
+      </div>
+      <div class="tip-box">
+        <p><strong>为什么跑步要练上肢？</strong>全马后半段(30km后)跑姿会因疲劳而变形——含胸驼背、摆臂无力。强壮的上背和肩部帮你在35km后依然保持挺拔跑姿，减少能量浪费。面拉是跑者最被忽视但最有用的上肢动作。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page 5: Saturday -->
+  <div class="page" id="page5">
+    <div class="card">
+      <div class="card-title"><span class="badge badge-long">长距离</span> 周六 - 户外长距离跑</div>
+      <div class="card-subtitle">建议早晨 6:30-7:00 出发 | 每周最重要的训练!</div>
+      <svg viewBox="0 0 600 80" style="width:100%;display:block;margin:12px 0;">
+        <rect x="0" y="25" width="600" height="30" rx="15" fill="#fff3e0"/>
+        <rect x="0" y="25" width="90" height="30" rx="15" fill="#85B7EB"/>
+        <rect x="90" y="25" width="120" height="30" fill="#5DCAA5"/>
+        <rect x="210" y="25" width="140" height="30" fill="#EF9F27"/>
+        <rect x="350" y="25" width="120" height="30" fill="#E24B4A"/>
+        <rect x="470" y="25" width="130" height="30" rx="15" fill="#888780"/>
+        <text x="45" y="44" text-anchor="middle" font-size="10" fill="white" font-weight="500">5-8km</text>
+        <text x="150" y="44" text-anchor="middle" font-size="10" fill="white" font-weight="500">10-16km</text>
+        <text x="280" y="44" text-anchor="middle" font-size="10" fill="white" font-weight="500">18-25km</text>
+        <text x="410" y="44" text-anchor="middle" font-size="10" fill="white" font-weight="500">28-35km</text>
+        <text x="535" y="44" text-anchor="middle" font-size="10" fill="white" font-weight="500">20-10km</text>
+        <text x="45" y="70" text-anchor="middle" font-size="9" fill="#86868b">W1-4</text>
+        <text x="150" y="70" text-anchor="middle" font-size="9" fill="#86868b">W5-10</text>
+        <text x="280" y="70" text-anchor="middle" font-size="9" fill="#86868b">W11-17</text>
+        <text x="410" y="70" text-anchor="middle" font-size="9" fill="#86868b">W18-23</text>
+        <text x="535" y="70" text-anchor="middle" font-size="9" fill="#86868b">W24-29</text>
+        <text x="45" y="18" text-anchor="middle" font-size="9" fill="#86868b">40-55min</text>
+        <text x="150" y="18" text-anchor="middle" font-size="9" fill="#86868b">70-110min</text>
+        <text x="280" y="18" text-anchor="middle" font-size="9" fill="#86868b">120-170min</text>
+        <text x="410" y="18" text-anchor="middle" font-size="9" fill="#86868b">180-230min</text>
+        <text x="535" y="18" text-anchor="middle" font-size="9" fill="#86868b">逐步缩短</text>
+      </svg>
+    </div>
+
+    <!-- 每周详细安排 -->
+    <div class="card">
+      <div class="card-title">每周具体距离和时间安排</div>
+      <div class="card-subtitle">按你的配速 7:45-8:00/km 估算时间 | 恢复周跑量减30%</div>
+      <table class="param-table">
+        <thead><tr><th>周次</th><th>距离</th><th>预计时间</th><th>配速</th><th>备注</th></tr></thead>
+        <tbody>
+          <tr><td style="font-weight:500;">W1</td><td>5 km</td><td>42 min</td><td>8:20/km</td><td>摸底跑，能跑完就好</td></tr>
+          <tr><td style="font-weight:500;">W2</td><td>6 km</td><td>50 min</td><td>8:15/km</td><td>比上周多1km</td></tr>
+          <tr><td style="font-weight:500;">W3</td><td>8 km</td><td>64 min</td><td>8:00/km</td><td>首次突破1小时</td></tr>
+          <tr><td style="font-weight:500;color:#34c759;">W4 恢复</td><td>5 km</td><td>42 min</td><td>8:20/km</td><td style="color:#34c759;">减量恢复周</td></tr>
+          <tr><td style="font-weight:500;">W5</td><td>10 km</td><td>80 min</td><td>8:00/km</td><td>首个10km!</td></tr>
+          <tr><td style="font-weight:500;">W6</td><td>12 km</td><td>94 min</td><td>7:50/km</td><td>开始练补水</td></tr>
+          <tr><td style="font-weight:500;">W7</td><td>14 km</td><td>108 min</td><td>7:45/km</td><td>练习每5km喝水</td></tr>
+          <tr><td style="font-weight:500;color:#34c759;">W8 恢复</td><td>10 km</td><td>78 min</td><td>7:50/km</td><td style="color:#34c759;">减量恢复周</td></tr>
+          <tr><td style="font-weight:500;">W9</td><td>16 km</td><td>124 min</td><td>7:45/km</td><td>开始吃能量胶</td></tr>
+          <tr><td style="font-weight:500;">W10</td><td>16 km</td><td>122 min</td><td>7:40/km</td><td>巩固</td></tr>
+          <tr><td style="font-weight:500;">W11</td><td>18 km</td><td>137 min</td><td>7:40/km</td><td>接近半马距离</td></tr>
+          <tr><td style="font-weight:500;color:#34c759;">W12 恢复</td><td>12 km</td><td>94 min</td><td>7:50/km</td><td style="color:#34c759;">减量恢复周</td></tr>
+          <tr><td style="font-weight:500;">W13</td><td>20 km</td><td>152 min</td><td>7:35/km</td><td>半马距离突破!</td></tr>
+          <tr><td style="font-weight:500;">W14</td><td>22 km</td><td>166 min</td><td>7:35/km</td><td>超半马</td></tr>
+          <tr><td style="font-weight:500;">W15</td><td>25 km</td><td>190 min</td><td>7:35/km</td><td>3小时跑</td></tr>
+          <tr><td style="font-weight:500;color:#34c759;">W16 恢复</td><td>15 km</td><td>116 min</td><td>7:45/km</td><td style="color:#34c759;">减量恢复周</td></tr>
+          <tr><td style="font-weight:500;">W17</td><td>25 km</td><td>188 min</td><td>7:30/km</td><td>巩固25km</td></tr>
+          <tr><td style="font-weight:500;">W18</td><td>28 km</td><td>210 min</td><td>7:30/km</td><td>3.5小时跑</td></tr>
+          <tr><td style="font-weight:500;">W19</td><td>30 km</td><td>228 min</td><td>7:35/km</td><td>30km大关!</td></tr>
+          <tr><td style="font-weight:500;color:#34c759;">W20 恢复</td><td>18 km</td><td>138 min</td><td>7:40/km</td><td style="color:#34c759;">减量恢复周</td></tr>
+          <tr><td style="font-weight:500;color:#E24B4A;">W21</td><td style="color:#E24B4A;font-weight:600;">32-35 km</td><td>250 min</td><td>7:35/km</td><td style="color:#E24B4A;font-weight:500;">最长距离模拟赛!</td></tr>
+          <tr><td style="font-weight:500;">W22</td><td>25 km</td><td>190 min</td><td>7:35/km</td><td>开始减量过渡</td></tr>
+          <tr><td style="font-weight:500;">W23</td><td>20 km</td><td>152 min</td><td>7:35/km</td><td>减量</td></tr>
+          <tr><td style="font-weight:500;">W24</td><td>16 km</td><td>124 min</td><td>7:45/km</td><td>继续减量</td></tr>
+          <tr><td style="font-weight:500;">W25</td><td>13 km</td><td>100 min</td><td>7:45/km</td><td>保持感觉</td></tr>
+          <tr><td style="font-weight:500;">W26</td><td>10 km</td><td>78 min</td><td>7:50/km</td><td>轻松跑</td></tr>
+          <tr><td style="font-weight:500;">W27</td><td>8 km</td><td>62 min</td><td>7:45/km</td><td>保持腿感</td></tr>
+          <tr><td style="font-weight:500;">W28</td><td>5 km</td><td>38 min</td><td>7:40/km</td><td>最后一次长距离</td></tr>
+          <tr><td style="font-weight:500;color:#E24B4A;">W29 赛周</td><td colspan="4" style="color:#E24B4A;font-weight:500;text-align:center;">比赛日! 周六12月6日 上海马拉松</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- How to run -->
+    <div class="card">
+      <div class="card-title">长距离怎么跑（操作步骤）</div>
+      <div class="timeline">
+        <div class="timeline-item warmup">
+          <div class="time">出发前 30min</div>
+          <div class="content">起床 + 吃东西 + 喝水</div>
+          <div class="detail">1片面包 + 半根香蕉 + 一杯温水(300ml)<br>上厕所，穿好装备，带上水壶/腰包</div>
+        </div>
+        <div class="timeline-item warmup">
+          <div class="time">出门后前 5min</div>
+          <div class="content">动态热身（不要静态拉伸!）</div>
+          <div class="detail">原地踢腿 x 20、高抬腿 x 20、侧弓步 x 10每侧、转髋 x 10每侧</div>
+        </div>
+        <div class="timeline-item warmup">
+          <div class="time">前 2km</div>
+          <div class="content">慢到不能再慢地跑</div>
+          <div class="detail">配速 8:30-9:00/km（比正常慢很多），让身体慢慢热起来<br>这2km是热身，不算在"有效训练"里</div>
+        </div>
+        <div class="timeline-item main">
+          <div class="time">正式开始</div>
+          <div class="content">按目标配速匀速跑</div>
+          <div class="detail">保持 7:40-8:00/km | 能说完整句子但不想聊天<br>不看手机，不听快节奏音乐（容易跑太快）</div>
+        </div>
+        <div class="timeline-item main">
+          <div class="time">每 5km</div>
+          <div class="content">喝水 2-3口</div>
+          <div class="detail">带手持水壶，或提前在路线上放水<br>公园跑的话利用饮水台</div>
+        </div>
+        <div class="timeline-item main">
+          <div class="time">每 40-45min（超过60min后）</div>
+          <div class="content">吃一个能量胶</div>
+          <div class="detail">撕开直接挤入嘴里，跟着喝几口水帮助吸收<br>不喝水直接吃胶容易反胃</div>
+        </div>
+        <div class="timeline-item main">
+          <div class="time">如果跑不动了</div>
+          <div class="content">走 1-2 分钟，然后继续跑</div>
+          <div class="detail">长距离跑中途走几分钟完全正常，不是失败<br>走的时候大口呼吸恢复，然后从慢速重新起步</div>
+        </div>
+        <div class="timeline-item cooldown">
+          <div class="time">最后 1km</div>
+          <div class="content">逐渐减速放松跑</div>
+          <div class="detail">不要跑完立刻停！慢慢降速到快走</div>
+        </div>
+        <div class="timeline-item cooldown">
+          <div class="time">跑完后</div>
+          <div class="content">立即拉伸 10分钟 + 30min内吃饭</div>
+          <div class="detail">拉伸重点：小腿、大腿前后、髋屈肌<br>早餐：面包+鸡蛋+牛奶+水果（碳水+蛋白质）</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gear for long run -->
+    <div class="card">
+      <div class="card-title">长距离跑装备</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;">
+        <div style="background:#f9f9fb;border-radius:12px;padding:14px;">
+          <h4 style="font-size:12px;font-weight:600;margin-bottom:6px;">10km以下</h4>
+          <p style="font-size:11px;color:#6e6e73;line-height:1.6;">跑鞋 + 速干衣 + 短裤<br>手机（记录配速）<br>出门前喝够水即可</p>
+        </div>
+        <div style="background:#fff3e0;border-radius:12px;padding:14px;">
+          <h4 style="font-size:12px;font-weight:600;color:#854F0B;margin-bottom:6px;">10km以上</h4>
+          <p style="font-size:11px;color:#6e6e73;line-height:1.6;">以上全带 +<br>手持水壶或跑步腰包<br>能量胶 1-2个<br>10元现金（应急买水）</p>
+        </div>
+      </div>
+      <div class="tip-box">
+        <p><strong>路线建议：</strong>选有饮水台/便利店的公园绿道或沿河步道。避免红绿灯多的马路（频繁停跑伤节奏）。理想路线：环形或往返（方便计算距离）。推荐用Keep/Nike Run Club记录。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page 6: Sunday -->
+  <div class="page" id="page6">
+    <div class="card">
+      <div class="card-title"><span class="badge badge-recovery">恢复日</span> 周日 - 主动恢复</div>
+      <div class="card-subtitle">30-45分钟 | 在家或健身房均可</div>
+      <svg viewBox="0 0 400 100" style="width:100%;max-width:400px;display:block;margin:16px auto;">
+        <rect x="0" y="0" width="400" height="100" rx="12" fill="#f0faf4"/>
+        <text x="70" y="55" text-anchor="middle" font-size="11" fill="#1a7a4c" font-family="sans-serif" font-weight="500">散步</text>
+        <text x="70" y="72" text-anchor="middle" font-size="10" fill="#86868b" font-family="sans-serif">30-45min</text>
+        <text x="160" y="55" text-anchor="middle" font-size="11" fill="#1a7a4c" font-family="sans-serif" font-weight="500">瑜伽</text>
+        <text x="160" y="72" text-anchor="middle" font-size="10" fill="#86868b" font-family="sans-serif">30min</text>
+        <text x="250" y="55" text-anchor="middle" font-size="11" fill="#1a7a4c" font-family="sans-serif" font-weight="500">泡沫轴</text>
+        <text x="250" y="72" text-anchor="middle" font-size="10" fill="#86868b" font-family="sans-serif">20min</text>
+        <text x="340" y="55" text-anchor="middle" font-size="11" fill="#1a7a4c" font-family="sans-serif" font-weight="500">游泳</text>
+        <text x="340" y="72" text-anchor="middle" font-size="10" fill="#86868b" font-family="sans-serif">30min</text>
+        <line x1="115" y1="35" x2="115" y2="85" stroke="#d4edda" stroke-width="1"/>
+        <line x1="205" y1="35" x2="205" y2="85" stroke="#d4edda" stroke-width="1"/>
+        <line x1="295" y1="35" x2="295" y2="85" stroke="#d4edda" stroke-width="1"/>
+      </svg>
+      <div class="tip-box">
+        <p><strong>恢复日的意义：</strong>跑步能力是在休息中提升的，不是在训练中。肌肉需要恢复才能变得更强。选择一项轻松的活动促进血液循环，但不给身体额外负担。游泳对关节极友好，是跑者的最佳交叉恢复方式。</p>
+      </div>
+    </div>
+    <!-- Stretching guide on Sunday page -->
+    <div class="card">
+      <div class="card-title">拉伸动作全览（每次训练后15分钟）</div>
+      <div class="card-subtitle">每个动作每侧保持30秒 x 2组 | 感到拉伸但不痛</div>
+      <div class="stretch-grid">
+        <div class="stretch-item">
+          <h4>1. 推墙拉小腿</h4>
+          <div class="duration">每侧30s x 2 | 腓肠肌+比目鱼肌</div>
+          <svg viewBox="0 0 140 80" width="140" height="80">
+            <rect x="10" y="10" width="5" height="60" fill="#e8e8ed" stroke="#d1d1d6" stroke-width="1"/>
+            <circle cx="40" cy="15" r="4" fill="#e8f5e9" stroke="#1a7a4c" stroke-width="1.5"/>
+            <line x1="40" y1="19" x2="42" y2="35" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="42" y1="35" x2="38" y2="50" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="38" y1="50" x2="35" y2="65" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="38" y1="50" x2="55" y2="58" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="55" y1="58" x2="60" y2="68" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="42" y1="28" x2="20" y2="22" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <ellipse cx="58" cy="63" rx="6" ry="8" fill="#fff3e0" fill-opacity="0.7" stroke="#ff9500" stroke-width="1" stroke-dasharray="2,1"/>
+            <text x="90" y="40" font-size="8" fill="#ff9500">拉伸感</text>
+            <text x="90" y="52" font-size="8" fill="#ff9500">在后腿</text>
+            <text x="90" y="64" font-size="8" fill="#ff9500">小腿处</text>
+          </svg>
+          <div class="how">双手推墙，前腿屈膝，后腿伸直脚跟踩地</div>
+        </div>
+        <div class="stretch-item">
+          <h4>2. 站姿抓脚拉大腿前</h4>
+          <div class="duration">每侧30s x 2 | 股四头肌</div>
+          <svg viewBox="0 0 140 80" width="140" height="80">
+            <circle cx="50" cy="12" r="4" fill="#e8f5e9" stroke="#1a7a4c" stroke-width="1.5"/>
+            <line x1="50" y1="16" x2="50" y2="38" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="50" y1="38" x2="48" y2="65" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="50" y1="38" x2="58" y2="30" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="58" y1="30" x2="62" y2="22" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="50" y1="28" x2="60" y2="22" stroke="#1a7a4c" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="2,1"/>
+            <ellipse cx="55" cy="34" rx="5" ry="10" fill="#fff3e0" fill-opacity="0.7" stroke="#ff9500" stroke-width="1" stroke-dasharray="2,1"/>
+            <text x="85" y="35" font-size="8" fill="#ff9500">大腿前侧</text>
+            <text x="85" y="47" font-size="8" fill="#ff9500">拉伸</text>
+          </svg>
+          <div class="how">单腿站立，手抓脚背拉向臀部，膝盖朝下</div>
+        </div>
+        <div class="stretch-item">
+          <h4>3. 弓步拉髋屈肌</h4>
+          <div class="duration">每侧30s x 2 | 髋前侧</div>
+          <svg viewBox="0 0 140 80" width="140" height="80">
+            <circle cx="55" cy="12" r="4" fill="#e8f5e9" stroke="#1a7a4c" stroke-width="1.5"/>
+            <line x1="55" y1="16" x2="55" y2="35" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="55" y1="35" x2="48" y2="48" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="48" y1="48" x2="45" y2="65" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="55" y1="35" x2="68" y2="50" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="68" y1="50" x2="75" y2="60" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <ellipse cx="65" cy="45" rx="7" ry="8" fill="#fff3e0" fill-opacity="0.7" stroke="#ff9500" stroke-width="1" stroke-dasharray="2,1"/>
+            <text x="90" y="40" font-size="8" fill="#ff9500">后腿髋前</text>
+            <text x="90" y="52" font-size="8" fill="#ff9500">深度拉伸</text>
+          </svg>
+          <div class="how">单膝跪地弓步，重心前移感受后腿髋前拉伸</div>
+        </div>
+        <div class="stretch-item">
+          <h4>4. 前倾拉大腿后侧</h4>
+          <div class="duration">每侧30s x 2 | 腘绳肌</div>
+          <svg viewBox="0 0 140 80" width="140" height="80">
+            <circle cx="45" cy="18" r="4" fill="#e8f5e9" stroke="#1a7a4c" stroke-width="1.5"/>
+            <line x1="45" y1="22" x2="55" y2="38" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="55" y1="38" x2="55" y2="55" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="55" y1="55" x2="52" y2="68" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="55" y1="55" x2="62" y2="68" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="50" y1="32" x2="52" y2="48" stroke="#1a7a4c" stroke-width="1.5" stroke-linecap="round"/>
+            <ellipse cx="55" cy="58" rx="5" ry="10" fill="#fff3e0" fill-opacity="0.7" stroke="#ff9500" stroke-width="1" stroke-dasharray="2,1"/>
+            <text x="80" y="50" font-size="8" fill="#ff9500">后大腿</text>
+            <text x="80" y="62" font-size="8" fill="#ff9500">牵拉感</text>
+          </svg>
+          <div class="how">一脚前伸脚尖勾起，背部平直前倾够脚尖</div>
+        </div>
+        <div class="stretch-item">
+          <h4>5. 4字型拉臀部</h4>
+          <div class="duration">每侧30s x 2 | 梨状肌</div>
+          <svg viewBox="0 0 140 80" width="140" height="80">
+            <circle cx="25" cy="45" r="4" fill="#e8f5e9" stroke="#1a7a4c" stroke-width="1.5"/>
+            <line x1="29" y1="45" x2="60" y2="45" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="60" y1="45" x2="70" y2="32" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="70" y1="32" x2="75" y2="20" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="60" y1="45" x2="78" y2="38" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="78" y1="38" x2="72" y2="28" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <ellipse cx="72" cy="37" rx="8" ry="6" fill="#fff3e0" fill-opacity="0.7" stroke="#ff9500" stroke-width="1" stroke-dasharray="2,1"/>
+            <text x="95" y="35" font-size="8" fill="#ff9500">臀部深层</text>
+            <text x="95" y="47" font-size="8" fill="#ff9500">拉伸</text>
+          </svg>
+          <div class="how">仰卧一脚翘另一腿上成4字，抱大腿拉向胸</div>
+        </div>
+        <div class="stretch-item">
+          <h4>6. 侧弯拉IT Band</h4>
+          <div class="duration">每侧30s x 2 | 髂胫束</div>
+          <svg viewBox="0 0 140 80" width="140" height="80">
+            <circle cx="55" cy="10" r="4" fill="#e8f5e9" stroke="#1a7a4c" stroke-width="1.5"/>
+            <line x1="55" y1="14" x2="52" y2="30" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="52" y1="30" x2="48" y2="45" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="48" y1="45" x2="42" y2="65" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="48" y1="45" x2="55" y2="55" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="55" y1="55" x2="50" y2="65" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="52" y1="22" x2="40" y2="15" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="52" y1="22" x2="65" y2="12" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <ellipse cx="40" cy="52" rx="5" ry="12" fill="#fff3e0" fill-opacity="0.7" stroke="#ff9500" stroke-width="1" stroke-dasharray="2,1"/>
+            <text x="80" y="40" font-size="8" fill="#ff9500">外侧从髋</text>
+            <text x="80" y="52" font-size="8" fill="#ff9500">到膝拉伸</text>
+          </svg>
+          <div class="how">交叉腿站立，身体侧弯，手举过头顶加强</div>
+        </div>
+      </div>
+      <div class="tip-box">
+        <p><strong>拉伸铁律：</strong>跑前 = 动态拉伸（踢腿、高抬腿，活动关节）| 跑后 = 静态拉伸（保持不动30秒）| 千万不要搞反！正常呼吸，呼气时轻轻加深幅度，不要憋气。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page 7: Race Day -->
+  <div class="page" id="page7">
+    <div class="card">
+      <div class="card-title" style="color:#E24B4A;"><span class="badge" style="background:#fde8e8;color:#E24B4A;">12月6日</span> 比赛日全攻略</div>
+      <div class="card-subtitle">上海马拉松 | 目标：轻松完赛 5小时30分 | 配速 7:49/km</div>
+      <!-- Personal stats -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;">
+        <div style="background:#f9f9fb;border-radius:10px;padding:10px;text-align:center;">
+          <div style="font-size:11px;color:#86868b;">身高体重</div>
+          <div style="font-size:14px;font-weight:600;margin-top:2px;">170cm/70kg</div>
+        </div>
+        <div style="background:#f9f9fb;border-radius:10px;padding:10px;text-align:center;">
+          <div style="font-size:11px;color:#86868b;">BMI</div>
+          <div style="font-size:14px;font-weight:600;margin-top:2px;">24.2 正常</div>
+        </div>
+        <div style="background:#f9f9fb;border-radius:10px;padding:10px;text-align:center;">
+          <div style="font-size:11px;color:#86868b;">目标配速</div>
+          <div style="font-size:14px;font-weight:600;margin-top:2px;color:#0071e3;">7:49/km</div>
+        </div>
+        <div style="background:#f9f9fb;border-radius:10px;padding:10px;text-align:center;">
+          <div style="font-size:11px;color:#86868b;">目标时间</div>
+          <div style="font-size:14px;font-weight:600;margin-top:2px;color:#E24B4A;">5:30:00</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Race timeline -->
+    <div class="card">
+      <div class="card-title">赛前时间表</div>
+      <div class="card-subtitle">上马通常7:00发枪，以此倒推</div>
+      <div class="timeline">
+        <div class="timeline-item warmup">
+          <div class="time">04:30 起床</div>
+          <div class="content">闹钟响！赛前2.5小时起床</div>
+          <div class="detail">喝一杯温水(300ml)，上厕所。把装备穿好检查一遍。</div>
+        </div>
+        <div class="timeline-item warmup">
+          <div class="time">05:00 早餐</div>
+          <div class="content">赛前早餐（易消化高碳水）</div>
+          <div class="detail">2片白面包 + 1根香蕉 + 少许花生酱 + 200ml运动饮料<br>不要吃油腻/高纤维/牛奶（避免肠胃问题）</div>
+        </div>
+        <div class="timeline-item warmup">
+          <div class="time">05:45 出发</div>
+          <div class="content">前往起点</div>
+          <div class="detail">带好号码布、计时芯片、能量胶(4-5个)、凡士林已涂抹腋下/大腿内侧</div>
+        </div>
+        <div class="timeline-item warmup">
+          <div class="time">06:15 到达</div>
+          <div class="content">存包 + 排队上厕所</div>
+          <div class="detail">厕所一定要提前排！开赛前去一次。穿一次性雨衣保暖等待。</div>
+        </div>
+        <div class="timeline-item warmup">
+          <div class="time">06:45 热身</div>
+          <div class="content">原地动态拉伸 5分钟</div>
+          <div class="detail">高抬腿、踢臀跑、侧弓步、转髋。不需要跑步热身，前3km就是热身。</div>
+        </div>
+        <div class="timeline-item main">
+          <div class="time">07:00 发枪!</div>
+          <div class="content">开跑！</div>
+          <div class="detail">人多不要抢位置，从容通过起点计时毯即可。前3km一定压住配速！</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Race pacing strategy -->
+    <div class="card">
+      <div class="card-title">分段配速策略（5:30完赛）</div>
+      <div class="card-subtitle">核心原则：前慢后稳，留力到35km后</div>
+      <table class="param-table">
+        <thead><tr><th>赛段</th><th>距离</th><th>目标配速</th><th>累计用时</th><th>策略</th></tr></thead>
+        <tbody>
+          <tr><td style="font-weight:500;">起步热身</td><td>0-5km</td><td class="param-highlight">8:15/km</td><td>41min</td><td>刻意压住！人群兴奋你也别跟</td></tr>
+          <tr><td style="font-weight:500;">进入节奏</td><td>5-10km</td><td class="param-highlight">7:50/km</td><td>1:20</td><td>找到舒适呼吸节奏</td></tr>
+          <tr><td style="font-weight:500;">稳定巡航</td><td>10-21km</td><td class="param-highlight">7:45/km</td><td>2:45</td><td>半程点，体感轻松，不加速</td></tr>
+          <tr><td style="font-weight:500;">保持匀速</td><td>21-30km</td><td class="param-highlight">7:45/km</td><td>3:55</td><td>专注呼吸和补给节奏</td></tr>
+          <tr><td style="font-weight:500;">防止掉速</td><td>30-37km</td><td class="param-highlight">8:00/km</td><td>4:51</td><td>允许略掉速，走30秒也OK</td></tr>
+          <tr><td style="font-weight:500;">最后冲刺</td><td>37-42.2km</td><td class="param-highlight">7:30-8:00</td><td>5:30</td><td>能跑就跑，跑走交替也行</td></tr>
+        </tbody>
+      </table>
+      <div class="tip-box">
+        <p><strong>5:30的容错空间很大：</strong>即使30km后每公里掉速30秒，最终也能在5:30内完赛。所以前半程一定要慢！宁可前面慢30秒，也不要后面崩30分钟。如果35km后想走一走，完全没问题，走2分钟跑5分钟交替也能轻松完赛。</p>
+      </div>
+    </div>
+
+    <!-- Hydration & Nutrition -->
+    <div class="card">
+      <div class="card-title">补给策略（喝水 / 能量胶 / 休息）</div>
+      <div class="card-subtitle">70kg体重每小时约需500-600ml水 + 30-60g碳水</div>
+      <table class="param-table">
+        <thead><tr><th>公里数</th><th>用时约</th><th>补水</th><th>能量胶</th><th>其他</th></tr></thead>
+        <tbody>
+          <tr><td style="font-weight:500;">5km</td><td>~40min</td><td style="color:#0071e3;">2-3口水</td><td>-</td><td>感受身体状态</td></tr>
+          <tr><td style="font-weight:500;">10km</td><td>~1:20</td><td style="color:#0071e3;">3-4口水/运动饮料</td><td style="color:#ff9500;font-weight:500;">第1个能量胶</td><td>吞胶后喝水帮助吸收</td></tr>
+          <tr><td style="font-weight:500;">15km</td><td>~2:00</td><td style="color:#0071e3;">3-4口水</td><td>-</td><td>检查配速是否过快</td></tr>
+          <tr><td style="font-weight:500;">20km</td><td>~2:38</td><td style="color:#0071e3;">运动饮料为主</td><td style="color:#ff9500;font-weight:500;">第2个能量胶</td><td>半程点！精神鼓励</td></tr>
+          <tr><td style="font-weight:500;">25km</td><td>~3:17</td><td style="color:#0071e3;">3-4口水</td><td>-</td><td>可以吃半根香蕉(补给站有)</td></tr>
+          <tr><td style="font-weight:500;">30km</td><td>~3:55</td><td style="color:#0071e3;">运动饮料+水交替</td><td style="color:#ff9500;font-weight:500;">第3个能量胶</td><td>⚠️ 撞墙区！走30秒也OK</td></tr>
+          <tr><td style="font-weight:500;">35km</td><td>~4:35</td><td style="color:#0071e3;">3-4口水</td><td style="color:#ff9500;font-weight:500;">第4个能量胶(可选)</td><td>最难的5km，跑走交替</td></tr>
+          <tr><td style="font-weight:500;">40km</td><td>~5:11</td><td style="color:#0071e3;">最后一次补水</td><td>-</td><td>只剩2km！你能做到！</td></tr>
+          <tr><td style="font-weight:500;">42.2km</td><td style="color:#E24B4A;font-weight:600;">~5:30</td><td>-</td><td>-</td><td style="color:#E24B4A;font-weight:500;">冲线！完赛！</td></tr>
+        </tbody>
+      </table>
+      <div class="tip-box">
+        <p><strong>补给铁律：</strong><br>
+        1. 每个水站都拿水（每5km一个），哪怕只喝一口<br>
+        2. 能量胶每40-45分钟一个，用水送服<br>
+        3. 不要在补给站急停，减速慢走着喝<br>
+        4. 前半程喝水为主，后半程运动饮料为主（补充电解质）<br>
+        5. 赛前必须在长距离训练中测试过能量胶品牌（避免肠胃不适）</p>
+      </div>
+    </div>
+
+    <!-- Walk strategy -->
+    <div class="card">
+      <div class="card-title">跑走策略（适合5:30目标）</div>
+      <div class="card-subtitle">跑走交替不丢人，是聪明的完赛策略</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">
+        <div style="background:#f9f9fb;border-radius:12px;padding:16px;">
+          <h4 style="font-size:13px;font-weight:600;margin-bottom:8px;">方案A：全程跑</h4>
+          <p style="font-size:12px;color:#6e6e73;line-height:1.6;">0-30km 全程匀速跑<br>30km后如感觉好继续跑<br>适合训练充分且当天状态好</p>
+        </div>
+        <div style="background:#e8f5e9;border-radius:12px;padding:16px;">
+          <h4 style="font-size:13px;font-weight:600;color:#1a7a4c;margin-bottom:8px;">方案B：30km后跑走交替（推荐）</h4>
+          <p style="font-size:12px;color:#6e6e73;line-height:1.6;">0-30km 全程匀速跑<br>30-42km 跑5分钟走1分钟<br>每个水站走着喝水（~30秒）<br>这样也能5:20左右完赛</p>
+        </div>
+      </div>
+      <div style="background:#f9f9fb;border-radius:12px;padding:16px;margin-top:12px;">
+        <h4 style="font-size:13px;font-weight:600;margin-bottom:8px;">方案C：全程跑走交替（最保险）</h4>
+        <p style="font-size:12px;color:#6e6e73;line-height:1.6;">全程执行 跑9分钟走1分钟 的节奏<br>每个水站走着补水（约30秒）<br>这样全程体能分配最均匀，几乎不会撞墙<br>预计完赛时间约 5:25-5:35</p>
+      </div>
+      <div class="tip-box">
+        <p><strong>哪种方案适合你？</strong>建议巅峰期的32km模拟跑中测试一下：如果30km后还有余力，选方案A；如果30km开始吃力，选方案B；如果对全马心里没底，选方案C。三种方案都能5:30内完赛。</p>
+      </div>
+    </div>
+
+    <!-- Race day gear -->
+    <div class="card">
+      <div class="card-title">比赛日装备清单</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">
+        <div style="background:#f9f9fb;border-radius:12px;padding:14px;">
+          <h4 style="font-size:13px;font-weight:600;margin-bottom:8px;">必带</h4>
+          <p style="font-size:12px;color:#6e6e73;line-height:1.8;">
+            - 跑鞋（已磨合100km以上的旧鞋）<br>
+            - 专业跑步袜（防水泡）<br>
+            - 短裤/压缩裤 + 速干T恤<br>
+            - 号码布 + 计时芯片<br>
+            - 能量胶 x 4-5个（别针别腰间）<br>
+            - 凡士林（涂腋下/大腿/乳头）<br>
+            - 手机/运动手表
+          </p>
+        </div>
+        <div style="background:#f9f9fb;border-radius:12px;padding:14px;">
+          <h4 style="font-size:13px;font-weight:600;margin-bottom:8px;">建议带</h4>
+          <p style="font-size:12px;color:#6e6e73;line-height:1.8;">
+            - 一次性雨衣（等待时保暖，开跑后脱）<br>
+            - 遮阳帽或导汗带<br>
+            - 腰包（放能量胶和手机）<br>
+            - 创可贴（贴乳头防磨）<br>
+            - 盐丸 x 3-4粒（防抽筋）<br>
+            - 赛后换洗衣物（存包）<br>
+            - 100元现金（应急）
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Post race -->
+    <div class="card">
+      <div class="card-title">赛后恢复</div>
+      <div class="timeline">
+        <div class="timeline-item cooldown">
+          <div class="time">完赛后 0-15min</div>
+          <div class="content">不要立刻坐下！慢走5-10分钟</div>
+          <div class="detail">领取完赛包、奖牌、食物。披上保温毯或外套。</div>
+        </div>
+        <div class="timeline-item cooldown">
+          <div class="time">完赛后 15-30min</div>
+          <div class="content">补充碳水+蛋白质</div>
+          <div class="detail">香蕉 + 面包 + 运动饮料。如果有力气可以做轻拉伸。</div>
+        </div>
+        <div class="timeline-item cooldown">
+          <div class="time">当天晚上</div>
+          <div class="content">庆祝！但不要暴饮暴食</div>
+          <div class="detail">温水泡脚20分钟。正常晚餐。早睡。不要喝酒（脱水）。</div>
+        </div>
+        <div class="timeline-item cooldown">
+          <div class="time">赛后1周</div>
+          <div class="content">完全休息 or 轻度活动</div>
+          <div class="detail">前3天只散步。第4-7天可以游泳/瑜伽。一周后再考虑慢跑。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    2026上海马拉松 · 12月6日 · 29周训练计划<br>
+    目标：轻松完赛 5:30 | 170cm / 70kg | 配速 7:49/km
+  </div>
+</div>
+
+<script>
+// Clock
+function updateTime() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2, '0');
+  const m = String(now.getMinutes()).padStart(2, '0');
+  const s = String(now.getSeconds()).padStart(2, '0');
+  document.getElementById('currentTime').textContent = `${h}:${m}:${s}`;
+  const days = ['日','一','二','三','四','五','六'];
+  document.getElementById('currentDate').textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 星期${days[now.getDay()]}`;
+}
+setInterval(updateTime, 1000);
+updateTime();
+
+// Pages
+let currentPage = new Date().getDay();
+if (currentPage === 0) currentPage = 6;
+else currentPage -= 1;
+
+function showPage(idx) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.page-nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('page' + idx).classList.add('active');
+  document.querySelectorAll('.page-nav button')[idx].classList.add('active');
+  currentPage = idx;
+}
+showPage(currentPage);
+
+// Calendar
+let calYear = 2026, calMonth = 4; // 0-indexed, May=4
+
+function getTrainingDay(dayOfWeek) {
+  // 0=Sun,1=Mon,...6=Sat
+  if (dayOfWeek === 1) return 'rest';
+  if (dayOfWeek === 0) return 'rest';
+  return 'training';
+}
+
+function renderCalendar() {
+  const months = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  document.getElementById('calMonth').textContent = `${calYear}年${months[calMonth]}`;
+  
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+  
+  const dayNames = ['一','二','三','四','五','六','日'];
+  dayNames.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'day-name';
+    el.textContent = d;
+    grid.appendChild(el);
+  });
+  
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const startOffset = firstDay === 0 ? 6 : firstDay - 1;
+  
+  for (let i = 0; i < startOffset; i++) {
+    const el = document.createElement('div');
+    el.className = 'day empty';
+    grid.appendChild(el);
+  }
+  
+  const today = new Date();
+  for (let d = 1; d <= daysInMonth; d++) {
+    const el = document.createElement('div');
+    el.className = 'day';
+    el.textContent = d;
+    
+    const date = new Date(calYear, calMonth, d);
+    const dow = date.getDay();
+    
+    if (d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear()) {
+      el.classList.add('today');
+    }
+    
+    if (dow === 1 || dow === 0) {
+      el.classList.add('rest');
+    } else {
+      el.classList.add('training');
+    }
+    
+    el.onclick = () => {
+      let pageIdx = dow === 0 ? 6 : dow - 1;
+      showPage(pageIdx);
+    };
+    
+    grid.appendChild(el);
+  }
+}
+
+function changeMonth(delta) {
+  calMonth += delta;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+}
+
+renderCalendar();
+</script>
+</body>
+</html>
