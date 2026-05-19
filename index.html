@@ -212,7 +212,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   <!-- Page 1: Tuesday -->
   <div class="page" id="page1">
     <div class="card">
-      <div class="card-title"><span class="badge badge-run">跑步日</span> 周二 - 跑步机训练<span class="timer-inline"><span class="timer-display-sm" id="timerDisp">00:00</span><button class="t-play" id="btnPlay" onclick="timerToggle()">&#9654;</button><button class="t-reset" onclick="timerReset()">&#8634;</button></span></div>
+      <div class="card-title"><span class="badge badge-run">跑步日</span> 周二 - 跑步机训练<span class="timer-inline"><span class="timer-display-sm" id="timerDisp">00:00.00</span><button class="t-play" id="btnPlay" onclick="timerToggle()">&#9654;</button><button class="t-reset" onclick="timerReset()">&#8634;</button></span></div>
       <div class="card-subtitle">20:00 - 21:00 | 公司健身房 | 总时长60分钟</div>
       <div class="timeline">
         <div class="timeline-item warmup">
@@ -1636,45 +1636,46 @@ showPageForDate(initNow.getFullYear(), initNow.getMonth(), initNow.getDate());
 
 // ===== Timer =====
 let timerInterval = null;
-let timerSeconds = 0;
+let timerMs = 0;
 let timerRunning = false;
 
-function formatTimerShort(totalSec) {
+function formatTimerShort(ms) {
+  const totalSec = Math.floor(ms / 1000);
+  const centisec = String(Math.floor((ms % 1000) / 10)).padStart(2, '0');
   const m = String(Math.floor(totalSec / 60)).padStart(2, '0');
   const s = String(totalSec % 60).padStart(2, '0');
   if (totalSec >= 3600) {
     const h = String(Math.floor(totalSec / 3600));
-    return h + ':' + m + ':' + s;
+    return h + ':' + m + ':' + s + '.' + centisec;
   }
-  return m + ':' + s;
+  return m + ':' + s + '.' + centisec;
 }
 
 function updateTimerDisplay() {
   const el = document.getElementById('timerDisp');
   if (el) {
-    el.textContent = formatTimerShort(timerSeconds);
+    el.textContent = formatTimerShort(timerMs);
     el.className = 'timer-display-sm' + (timerRunning ? ' running' : '');
   }
 }
 
 function timerToggle() {
   if (timerRunning) {
-    // Pause
     timerRunning = false;
     clearInterval(timerInterval);
     const btn = document.getElementById('btnPlay');
     btn.className = 't-play';
     btn.innerHTML = '&#9654;';
   } else {
-    // Start
     timerRunning = true;
     const btn = document.getElementById('btnPlay');
     btn.className = 't-pause';
     btn.innerHTML = '&#9646;&#9646;';
+    const startTime = Date.now() - timerMs;
     timerInterval = setInterval(() => {
-      timerSeconds++;
+      timerMs = Date.now() - startTime;
       updateTimerDisplay();
-    }, 1000);
+    }, 30);
   }
   updateTimerDisplay();
 }
@@ -1682,7 +1683,7 @@ function timerToggle() {
 function timerReset() {
   timerRunning = false;
   clearInterval(timerInterval);
-  timerSeconds = 0;
+  timerMs = 0;
   const btn = document.getElementById('btnPlay');
   if (btn) { btn.className = 't-play'; btn.innerHTML = '&#9654;'; }
   updateTimerDisplay();
