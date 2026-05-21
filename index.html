@@ -331,18 +331,18 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   <!-- Page 2: Wednesday -->
   <div class="page" id="page2">
     <div class="card">
-      <div class="card-title"><span class="badge badge-strength">力量日</span> 周三 - 下肢+核心</div>
+      <div class="card-title"><span class="badge badge-strength">力量日</span> 周三 - 下肢+核心<span class="timer-inline"><span class="timer-display-sm" id="timerDisp2">00:00.00</span><button class="t-play" onclick="timerToggle()" id="btnPlay2">&#9654;</button><button class="t-reset" onclick="timerReset()">&#8634;</button></span></div>
       <div class="card-subtitle">20:00 - 21:00 | 公司健身房 | 总时长60分钟</div>
       <div class="timeline">
         <div class="timeline-item warmup">
           <div class="time">20:00 - 20:08 [8min]</div>
           <div class="content">热身</div>
-          <div class="detail">跑步机快走 5.5km/h 或椭圆机低阻力 | 微微出汗即可</div>
+          <div class="detail">跑步机快走 6.0km/h 或椭圆机低阻力 | 微微出汗即可</div>
         </div>
         <div class="timeline-item main">
           <div class="time">20:08 - 20:35 [27min]</div>
           <div class="content">下肢力量训练</div>
-          <div class="detail">深蹲 → 罗马尼亚硬拉 → 保加利亚分腿蹲 → 臀桥</div>
+          <div class="detail">深蹲 → 腿举机 → 腿弯举机 → 小腿提踵</div>
         </div>
         <div class="timeline-item main">
           <div class="time">20:35 - 20:47 [12min]</div>
@@ -351,21 +351,21 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
         </div>
         <div class="timeline-item cooldown">
           <div class="time">20:47 - 21:00 [13min]</div>
-          <div class="content">拉伸放松</div>
-          <div class="detail">全身静态拉伸，重点：髋屈肌、小腿、股四头肌</div>
+          <div class="content">拉伸放松（详见下方）</div>
+          <div class="detail">重点：股四头肌、腘绳肌、髋屈肌、小腿</div>
         </div>
       </div>
     </div>
     <div class="card">
       <div class="card-title">下肢力量动作</div>
-      <div class="card-subtitle">动作质量优先于重量，宁轻勿假</div>
+      <div class="card-subtitle">用健身房器械替代自由重量，对腰椎更安全</div>
       <div class="exercise-grid">
         <div class="exercise-item">
           <h4>1. 高脚杯深蹲</h4>
-          <div class="sets">3-4组 x 12次 | 休息60s</div>
+          <div class="sets">4组 x 12次 | 休息60s</div>
           <svg viewBox="0 0 160 100" width="160" height="100">
-            <line x1="40" y1="20" x2="40" y2="40" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
             <circle cx="40" cy="15" r="5" fill="#f3e5f5" stroke="#af52de" stroke-width="2"/>
+            <line x1="40" y1="20" x2="40" y2="40" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
             <line x1="40" y1="40" x2="40" y2="60" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
             <line x1="40" y1="60" x2="35" y2="80" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
             <line x1="40" y1="60" x2="45" y2="80" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
@@ -379,64 +379,60 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
             <line x1="115" y1="72" x2="118" y2="82" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
             <text x="110" y="95" text-anchor="middle" font-size="9" fill="#86868b">底部</text>
           </svg>
-          <div class="tips">双脚与肩同宽，脚尖外展15-30度<br>哑铃抱胸前，蹲到大腿平行地面<br>膝盖与脚尖同向，背部挺直</div>
+          <div class="tips">双脚与肩同宽，脚尖外展15-30度<br>哑铃抱胸前，蹲到大腿平行地面<br>膝盖与脚尖同向，背部挺直<br><strong>你能做这个，保留！</strong></div>
         </div>
         <div class="exercise-item">
-          <h4>2. 罗马尼亚硬拉</h4>
-          <div class="sets">3-4组 x 12次 | 休息60s</div>
+          <h4>2. 腿举机（替代硬拉）</h4>
+          <div class="sets">4组 x 12次 | 休息60s</div>
           <svg viewBox="0 0 160 100" width="160" height="100">
-            <circle cx="40" cy="15" r="5" fill="#f3e5f5" stroke="#af52de" stroke-width="2"/>
-            <line x1="40" y1="20" x2="40" y2="50" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="40" y1="50" x2="38" y2="78" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="40" y1="50" x2="42" y2="78" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="40" y1="35" x2="33" y2="55" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="40" y1="35" x2="47" y2="55" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
-            <text x="40" y="92" text-anchor="middle" font-size="9" fill="#86868b">起始</text>
-            <circle cx="115" cy="28" r="5" fill="#f3e5f5" stroke="#af52de" stroke-width="2"/>
-            <line x1="115" y1="33" x2="125" y2="48" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="125" y1="48" x2="125" y2="60" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="125" y1="60" x2="122" y2="78" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="125" y1="60" x2="128" y2="78" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="120" y1="42" x2="112" y2="58" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="120" y1="42" x2="115" y2="60" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
-            <text x="120" y="92" text-anchor="middle" font-size="9" fill="#86868b">底部</text>
+            <rect x="20" y="50" width="60" height="35" rx="4" fill="#f5f5f7" stroke="#d1d1d6" stroke-width="1"/>
+            <text x="50" y="72" text-anchor="middle" font-size="8" fill="#86868b">座椅</text>
+            <circle cx="65" cy="42" r="5" fill="#f3e5f5" stroke="#af52de" stroke-width="2"/>
+            <line x1="65" y1="47" x2="60" y2="60" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="60" y1="60" x2="75" y2="60" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="75" y1="60" x2="95" y2="45" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="95" y1="45" x2="110" y2="35" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <rect x="105" y="25" width="30" height="15" rx="3" fill="#e3f2fd" stroke="#0071e3" stroke-width="1"/>
+            <text x="120" y="35" text-anchor="middle" font-size="7" fill="#0071e3">踏板</text>
+            <path d="M110,22 L110,15" stroke="#ff9500" stroke-width="1.5" fill="none"/>
+            <text x="120" y="12" text-anchor="middle" font-size="8" fill="#ff9500">腿蹬出</text>
           </svg>
-          <div class="tips">臀部向后推（像关冰箱门）<br>背部平直如桌面，膝盖微屈<br>感受后大腿拉伸后夹臀起身</div>
+          <div class="tips">坐稳，双脚放踏板与肩同宽<br>蹬出时膝盖不要完全锁死<br>缓慢收回到90度再蹬出<br><strong>对腰椎零压力，替代硬拉</strong></div>
         </div>
         <div class="exercise-item">
-          <h4>3. 保加利亚分腿蹲</h4>
-          <div class="sets">3组 x 10次/每侧 | 休息60s</div>
+          <h4>3. 坐姿腿弯举机（替代保加利亚蹲）</h4>
+          <div class="sets">3组 x 15次 | 休息45s</div>
           <svg viewBox="0 0 160 100" width="160" height="100">
-            <circle cx="60" cy="20" r="5" fill="#f3e5f5" stroke="#af52de" stroke-width="2"/>
-            <line x1="60" y1="25" x2="60" y2="45" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="60" y1="45" x2="55" y2="60" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="55" y1="60" x2="50" y2="78" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="55" y1="60" x2="75" y2="65" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="75" y1="65" x2="85" y2="70" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
-            <rect x="82" y="68" width="22" height="10" rx="3" fill="#f5f5f7" stroke="#d1d1d6" stroke-width="1"/>
-            <line x1="35" y1="80" x2="100" y2="80" stroke="#d1d1d6" stroke-width="1" stroke-dasharray="3,2"/>
+            <rect x="20" y="40" width="55" height="35" rx="4" fill="#f5f5f7" stroke="#d1d1d6" stroke-width="1"/>
+            <text x="47" y="62" text-anchor="middle" font-size="8" fill="#86868b">座椅</text>
+            <circle cx="55" cy="32" r="5" fill="#f3e5f5" stroke="#af52de" stroke-width="2"/>
+            <line x1="55" y1="37" x2="50" y2="50" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="50" y1="50" x2="50" y2="60" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="50" y1="60" x2="75" y2="60" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="75" y1="60" x2="75" y2="75" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <rect x="68" y="73" width="15" height="8" rx="3" fill="#e3f2fd" stroke="#0071e3" stroke-width="1"/>
+            <path d="M75,75 C75,82 72,85 68,85" stroke="#ff9500" stroke-width="1.5" fill="none" stroke-dasharray="2,1"/>
+            <text x="120" y="50" font-size="8" fill="#ff9500">小腿向下</text>
+            <text x="120" y="62" font-size="8" fill="#ff9500">弯曲发力</text>
           </svg>
-          <div class="tips">后脚脚背搭凳子上<br>前膝不超过脚尖太多，不内扣<br>新手先徒手，稳定后持哑铃</div>
+          <div class="tips">坐稳，脚踝卡住滚垫<br>小腿向下弯曲（感受大腿后侧发力）<br>缓慢放回，不要甩<br><strong>练后链，保护膝盖，替代保加利亚蹲</strong></div>
         </div>
         <div class="exercise-item">
-          <h4>4. 臀桥</h4>
-          <div class="sets">3组 x 15次 | 顶端停2秒</div>
+          <h4>4. 站姿提踵（替代臀桥）</h4>
+          <div class="sets">3组 x 20次 | 休息30s</div>
           <svg viewBox="0 0 160 100" width="160" height="100">
-            <circle cx="30" cy="68" r="4" fill="#f3e5f5" stroke="#af52de" stroke-width="2"/>
-            <line x1="34" y1="68" x2="65" y2="68" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="65" y1="68" x2="75" y2="55" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="75" y1="55" x2="80" y2="68" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="20" y1="72" x2="90" y2="72" stroke="#d1d1d6" stroke-width="1" stroke-dasharray="3,2"/>
-            <text x="55" y="88" text-anchor="middle" font-size="9" fill="#86868b">躺平</text>
-            <circle cx="105" cy="55" r="4" fill="#f3e5f5" stroke="#af52de" stroke-width="2"/>
-            <line x1="109" y1="55" x2="130" y2="45" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="130" y1="45" x2="142" y2="50" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="142" y1="50" x2="145" y2="72" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="100" y1="72" x2="155" y2="72" stroke="#d1d1d6" stroke-width="1" stroke-dasharray="3,2"/>
-            <text x="130" y="88" text-anchor="middle" font-size="9" fill="#86868b">抬臀</text>
-            <path d="M130,42 L130,35" stroke="#ff9500" stroke-width="1.5" fill="none" marker-end="url(#arrowOrange)"/>
+            <rect x="55" y="78" width="50" height="8" rx="2" fill="#f5f5f7" stroke="#d1d1d6" stroke-width="1"/>
+            <text x="80" y="97" text-anchor="middle" font-size="8" fill="#86868b">台阶/杠铃片</text>
+            <circle cx="80" cy="20" r="5" fill="#f3e5f5" stroke="#af52de" stroke-width="2"/>
+            <line x1="80" y1="25" x2="80" y2="50" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="80" y1="50" x2="78" y2="75" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="80" y1="50" x2="82" y2="75" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M80,15 L80,8" stroke="#ff9500" stroke-width="1.5" fill="none"/>
+            <text x="120" y="40" font-size="8" fill="#ff9500">踮脚尖</text>
+            <text x="120" y="52" font-size="8" fill="#ff9500">脚跟悬空</text>
+            <text x="120" y="64" font-size="8" fill="#ff9500">慢慢放下</text>
           </svg>
-          <div class="tips">仰卧屈膝双脚踩地<br>臀部发力顶起至身体成一线<br>顶端挤压臀部2秒再放下</div>
+          <div class="tips">前脚掌踩台阶边缘，脚跟悬空<br>踮到最高停1秒，缓慢放下<br>手可以扶墙保持平衡<br><strong>防胫骨痛+小腿抽筋</strong></div>
         </div>
       </div>
     </div>
@@ -445,7 +441,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
       <div class="exercise-grid">
         <div class="exercise-item">
           <h4>5. 平板支撑</h4>
-          <div class="sets">3组 x 30-60秒</div>
+          <div class="sets">3组 x 45-60秒</div>
           <svg viewBox="0 0 160 60" width="160" height="60">
             <circle cx="25" cy="22" r="4" fill="#f3e5f5" stroke="#af52de" stroke-width="2"/>
             <line x1="29" y1="24" x2="90" y2="28" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
@@ -455,7 +451,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
             <line x1="15" y1="47" x2="130" y2="47" stroke="#d1d1d6" stroke-width="1" stroke-dasharray="3,2"/>
             <line x1="25" y1="20" x2="120" y2="24" stroke="#34c759" stroke-width="1" stroke-dasharray="2,2"/>
           </svg>
-          <div class="tips">前臂+脚尖着地，身体一条线<br>不塌腰不翘臀，收紧腹部</div>
+          <div class="tips">前臂+脚尖着地，身体一条线<br>不塌腰不翘臀，收紧腹部<br>目视地面，正常呼吸</div>
         </div>
         <div class="exercise-item">
           <h4>6. 死虫式</h4>
@@ -471,7 +467,109 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
             <text x="130" y="25" font-size="8" fill="#ff9500">对侧</text>
             <text x="130" y="35" font-size="8" fill="#ff9500">伸展</text>
           </svg>
-          <div class="tips">仰卧，对侧手脚同时伸出<br>腰部贴地，全程核心收紧</div>
+          <div class="tips">仰卧，对侧手脚同时缓慢伸出<br>腰部贴地不拱起，全程核心收紧<br>慢比快有效，4秒一次</div>
+        </div>
+        <div class="exercise-item">
+          <h4>7. 俄罗斯转体</h4>
+          <div class="sets">3组 x 20次（左右各10）</div>
+          <svg viewBox="0 0 160 60" width="160" height="60">
+            <circle cx="80" cy="18" r="4" fill="#f3e5f5" stroke="#af52de" stroke-width="2"/>
+            <line x1="80" y1="22" x2="80" y2="38" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="80" y1="38" x2="75" y2="50" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="80" y1="38" x2="85" y2="50" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="80" y1="30" x2="65" y2="28" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="80" y1="30" x2="95" y2="28" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M65,26 C60,30 60,34 65,36" stroke="#ff9500" stroke-width="1.5" fill="none" stroke-dasharray="2,1"/>
+            <path d="M95,26 C100,30 100,34 95,36" stroke="#ff9500" stroke-width="1.5" fill="none" stroke-dasharray="2,1"/>
+            <text x="130" y="30" font-size="8" fill="#ff9500">左右</text>
+            <text x="130" y="42" font-size="8" fill="#ff9500">转体</text>
+          </svg>
+          <div class="tips">坐地上，双脚抬离地面<br>双手合十或持小哑铃<br>身体左右交替转动，骨盆不动</div>
+        </div>
+        <div class="exercise-item">
+          <h4>8. 侧平板支撑</h4>
+          <div class="sets">每侧2组 x 30秒</div>
+          <svg viewBox="0 0 160 60" width="160" height="60">
+            <circle cx="35" cy="15" r="4" fill="#f3e5f5" stroke="#af52de" stroke-width="2"/>
+            <line x1="35" y1="19" x2="55" y2="28" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="55" y1="28" x2="100" y2="42" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="100" y1="42" x2="120" y2="48" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="55" y1="28" x2="55" y2="48" stroke="#af52de" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="35" y1="15" x2="35" y2="5" stroke="#af52de" stroke-width="2" stroke-linecap="round"/>
+            <line x1="40" y1="50" x2="130" y2="50" stroke="#d1d1d6" stroke-width="1" stroke-dasharray="3,2"/>
+          </svg>
+          <div class="tips">侧身前臂撑地，身体成一线<br>髋部不下沉，收紧侧腰<br>锻炼腰部两侧稳定性</div>
+        </div>
+      </div>
+    </div>
+    <!-- 周三拉伸 -->
+    <div class="card">
+      <div class="card-title">力量训练后拉伸（13分钟）</div>
+      <div class="card-subtitle">力量训练后肌肉紧缩，必须拉伸恢复弹性</div>
+      <div class="stretch-grid">
+        <div class="stretch-item">
+          <h4>1. 抓脚拉股四头肌</h4>
+          <div class="duration">每侧30s x 2</div>
+          <svg viewBox="0 0 140 70" width="140" height="70">
+            <circle cx="50" cy="10" r="4" fill="#e8f5e9" stroke="#1a7a4c" stroke-width="1.5"/>
+            <line x1="50" y1="14" x2="50" y2="34" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="50" y1="34" x2="48" y2="58" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="50" y1="34" x2="57" y2="26" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="57" y1="26" x2="60" y2="18" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <ellipse cx="55" cy="30" rx="5" ry="9" fill="#fff3e0" fill-opacity="0.7" stroke="#ff9500" stroke-width="1" stroke-dasharray="2,1"/>
+            <text x="80" y="30" font-size="8" fill="#ff9500">深蹲后</text>
+            <text x="80" y="42" font-size="8" fill="#ff9500">必拉！</text>
+          </svg>
+          <div class="how">站立抓脚背拉向臀部，膝盖朝下</div>
+        </div>
+        <div class="stretch-item">
+          <h4>2. 站姿前倾拉腘绳肌</h4>
+          <div class="duration">每侧30s x 2</div>
+          <svg viewBox="0 0 140 70" width="140" height="70">
+            <circle cx="45" cy="14" r="4" fill="#e8f5e9" stroke="#1a7a4c" stroke-width="1.5"/>
+            <line x1="45" y1="18" x2="55" y2="32" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="55" y1="32" x2="55" y2="47" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="55" y1="47" x2="52" y2="60" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="55" y1="47" x2="62" y2="60" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <ellipse cx="55" cy="52" rx="5" ry="9" fill="#fff3e0" fill-opacity="0.7" stroke="#ff9500" stroke-width="1" stroke-dasharray="2,1"/>
+            <text x="80" y="40" font-size="8" fill="#ff9500">腿举后</text>
+            <text x="80" y="52" font-size="8" fill="#ff9500">必拉！</text>
+          </svg>
+          <div class="how">一脚前伸脚尖勾起，背直前倾去够脚尖</div>
+        </div>
+        <div class="stretch-item">
+          <h4>3. 弓步拉髋屈肌</h4>
+          <div class="duration">每侧30s x 2</div>
+          <svg viewBox="0 0 140 70" width="140" height="70">
+            <circle cx="55" cy="8" r="4" fill="#e8f5e9" stroke="#1a7a4c" stroke-width="1.5"/>
+            <line x1="55" y1="12" x2="55" y2="30" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="55" y1="30" x2="48" y2="42" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="48" y1="42" x2="45" y2="58" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="55" y1="30" x2="65" y2="44" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="65" y1="44" x2="72" y2="55" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <ellipse cx="62" cy="40" rx="7" ry="7" fill="#fff3e0" fill-opacity="0.7" stroke="#ff9500" stroke-width="1" stroke-dasharray="2,1"/>
+            <text x="85" y="35" font-size="8" fill="#ff9500">久坐者</text>
+            <text x="85" y="47" font-size="8" fill="#ff9500">特别需要</text>
+          </svg>
+          <div class="how">单膝跪地弓步，重心前移拉后腿髋前</div>
+        </div>
+        <div class="stretch-item">
+          <h4>4. 推墙拉小腿</h4>
+          <div class="duration">每侧30s x 2</div>
+          <svg viewBox="0 0 140 70" width="140" height="70">
+            <rect x="10" y="8" width="5" height="55" fill="#e8e8ed" stroke="#d1d1d6" stroke-width="1"/>
+            <circle cx="38" cy="12" r="4" fill="#e8f5e9" stroke="#1a7a4c" stroke-width="1.5"/>
+            <line x1="38" y1="16" x2="40" y2="30" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="40" y1="30" x2="37" y2="44" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="37" y1="44" x2="34" y2="58" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="37" y1="44" x2="52" y2="52" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="52" y1="52" x2="56" y2="60" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <line x1="40" y1="24" x2="20" y2="18" stroke="#1a7a4c" stroke-width="2" stroke-linecap="round"/>
+            <ellipse cx="54" cy="56" rx="6" ry="7" fill="#fff3e0" fill-opacity="0.7" stroke="#ff9500" stroke-width="1" stroke-dasharray="2,1"/>
+            <text x="80" y="35" font-size="8" fill="#ff9500">提踵后</text>
+            <text x="80" y="47" font-size="8" fill="#ff9500">必拉！</text>
+          </svg>
+          <div class="how">推墙，后腿伸直脚跟踩地拉小腿</div>
         </div>
       </div>
     </div>
@@ -480,7 +578,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   <!-- Page 3: Thursday -->
   <div class="page" id="page3">
     <div class="card">
-      <div class="card-title"><span class="badge badge-run">跑步日</span> 周四 - 变速跑训练</div>
+      <div class="card-title"><span class="badge badge-run">跑步日</span> 周四 - 变速跑训练<span class="timer-inline"><span class="timer-display-sm timerD">00:00.00</span><button class="t-play btnPlayAll" onclick="timerToggle()">&#9654;</button><button class="t-reset" onclick="timerReset()">&#8634;</button></span></div>
       <div class="card-subtitle">20:00 - 21:00 | 公司健身房 | 总时长60分钟</div>
       <div class="timeline">
         <div class="timeline-item warmup">
@@ -587,7 +685,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   <!-- Page 4: Friday -->
   <div class="page" id="page4">
     <div class="card">
-      <div class="card-title"><span class="badge badge-strength">力量</span><span class="badge badge-cross">交叉训练</span> 周五 - 上肢+有氧</div>
+      <div class="card-title"><span class="badge badge-strength">力量</span><span class="badge badge-cross">交叉训练</span> 周五 - 上肢+有氧<span class="timer-inline"><span class="timer-display-sm timerD">00:00.00</span><button class="t-play btnPlayAll" onclick="timerToggle()">&#9654;</button><button class="t-reset" onclick="timerReset()">&#8634;</button></span></div>
       <div class="card-subtitle">20:00 - 21:00 | 公司健身房 | 总时长60分钟</div>
       <div class="timeline">
         <div class="timeline-item warmup">
@@ -706,7 +804,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   <!-- Page 5: Saturday -->
   <div class="page" id="page5">
     <div class="card">
-      <div class="card-title"><span class="badge badge-long">长距离</span> 周六 - 户外长距离跑</div>
+      <div class="card-title"><span class="badge badge-long">长距离</span> 周六 - 户外长距离跑<span class="timer-inline"><span class="timer-display-sm timerD">00:00.00</span><button class="t-play btnPlayAll" onclick="timerToggle()">&#9654;</button><button class="t-reset" onclick="timerReset()">&#8634;</button></span></div>
       <div class="card-subtitle">建议早晨 6:30-7:00 出发 | 每周最重要的训练!</div>
       <svg viewBox="0 0 600 80" style="width:100%;display:block;margin:12px 0;">
         <rect x="0" y="25" width="600" height="30" rx="15" fill="#fff3e0"/>
@@ -1652,25 +1750,25 @@ function formatTimerShort(ms) {
 }
 
 function updateTimerDisplay() {
+  const text = formatTimerShort(timerMs);
+  const cls = 'timer-display-sm' + (timerRunning ? ' running' : '');
   const el = document.getElementById('timerDisp');
-  if (el) {
-    el.textContent = formatTimerShort(timerMs);
-    el.className = 'timer-display-sm' + (timerRunning ? ' running' : '');
-  }
+  if (el) { el.textContent = text; el.className = cls; }
+  document.querySelectorAll('.timerD').forEach(d => { d.textContent = text; d.className = 'timer-display-sm timerD' + (timerRunning ? ' running' : ''); });
 }
 
 function timerToggle() {
   if (timerRunning) {
     timerRunning = false;
     clearInterval(timerInterval);
-    const btn = document.getElementById('btnPlay');
-    btn.className = 't-play';
-    btn.innerHTML = '&#9654;';
+    document.querySelectorAll('.btnPlayAll, #btnPlay').forEach(btn => { btn.className = 't-play btnPlayAll'; btn.innerHTML = '&#9654;'; });
+    const bp = document.getElementById('btnPlay');
+    if(bp){ bp.className='t-play'; bp.innerHTML='&#9654;'; }
   } else {
     timerRunning = true;
-    const btn = document.getElementById('btnPlay');
-    btn.className = 't-pause';
-    btn.innerHTML = '&#9646;&#9646;';
+    document.querySelectorAll('.btnPlayAll, #btnPlay').forEach(btn => { btn.className = 't-pause btnPlayAll'; btn.innerHTML = '&#9646;&#9646;'; });
+    const bp = document.getElementById('btnPlay');
+    if(bp){ bp.className='t-pause'; bp.innerHTML='&#9646;&#9646;'; }
     const startTime = Date.now() - timerMs;
     timerInterval = setInterval(() => {
       timerMs = Date.now() - startTime;
@@ -1684,8 +1782,9 @@ function timerReset() {
   timerRunning = false;
   clearInterval(timerInterval);
   timerMs = 0;
-  const btn = document.getElementById('btnPlay');
-  if (btn) { btn.className = 't-play'; btn.innerHTML = '&#9654;'; }
+  document.querySelectorAll('.btnPlayAll, #btnPlay').forEach(btn => { btn.className = 't-play btnPlayAll'; btn.innerHTML = '&#9654;'; });
+  const bp = document.getElementById('btnPlay');
+  if(bp){ bp.className='t-play'; bp.innerHTML='&#9654;'; }
   updateTimerDisplay();
 }
 </script>
